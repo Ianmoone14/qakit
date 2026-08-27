@@ -1,6 +1,6 @@
 # Architecture
 
-Rules for anyone changing QAKit. Product roadmap and estimates live outside this repo.
+Rules for anyone changing QAKit. Weekly plan and hour log: [PROGRAM.md](PROGRAM.md).
 
 ## Boundaries
 
