@@ -1,6 +1,6 @@
 # Architecture
 
-Rules for anyone changing QAKit. Weekly plan and hour log: [PROGRAM.md](PROGRAM.md).
+Rules for anyone changing QAKit. Plan and hours: [plan.xlsx](plan.xlsx).
 
 ## Boundaries
 
