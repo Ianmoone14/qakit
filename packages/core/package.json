@@ -1,0 +1,35 @@
+{
+  "name": "@qakit/core",
+  "version": "0.1.0",
+  "description": "QAKit core: config, context, lifecycle, logging, artifacts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true })\""
+  },
+  "dependencies": {
+    "@qakit/contracts": "workspace:*",
+    "jiti": "^2.4.0",
+    "pino": "^9.0.0",
+    "pino-pretty": "^11.0.0",
+    "ulid": "^2.3.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
