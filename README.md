@@ -28,7 +28,7 @@ Requires Node 20+ and [pnpm](https://pnpm.io) 9 (`corepack enable` or a local pn
 
 Later packages (`@qakit/playwright`, `@qakit/api`, `@qakit/cli`) are not in the workspace yet.
 
-Teams must import package names (`@qakit/core`), never `packages/*/src` internals. See [docs/architecture.md](docs/architecture.md). Plan and hours: [docs/plan.xlsx](docs/plan.xlsx).
+Teams must import package names (`@qakit/core`), never `packages/*/src` internals. See [docs/architecture.md](docs/architecture.md). Plan and hours: [docs/plan.xlsx](docs/plan.xlsx). Epics and tasks: [docs/BACKLOG.md](docs/BACKLOG.md).
 
 ## Consume (when runtime exists)
 
