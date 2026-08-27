@@ -1,0 +1,31 @@
+export const ARTIFACT_TYPES = [
+  'screenshot',
+  'video',
+  'trace',
+  'log',
+  'data',
+  'request',
+  'response',
+  'custom',
+] as const;
+
+export type ArtifactType = (typeof ARTIFACT_TYPES)[number];
+
+export interface Artifact {
+  id: string;
+  type: ArtifactType;
+  name: string;
+  path: string;
+  executionId: string;
+  testId?: string;
+  timestamp: Date;
+  metadata?: Record<string, unknown>;
+}
+
+export type ArtifactInput = Omit<Artifact, 'id' | 'timestamp'>;
+
+export interface ArtifactManager {
+  save(artifact: ArtifactInput): Promise<Artifact>;
+  getAll(): Artifact[];
+  getByTest(testId: string): Artifact[];
+}
