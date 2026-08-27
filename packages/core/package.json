@@ -1,7 +1,7 @@
 {
   "name": "@qakit/core",
   "version": "0.1.0",
-  "description": "QAKit core: config, context, lifecycle, logging, artifacts",
+  "description": "QAKit core runtime. Implementation starts in Phase 1.3.",
   "type": "module",
   "exports": {
     ".": {
@@ -17,15 +17,9 @@
     "clean": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true })\""
   },
   "dependencies": {
-    "@qakit/contracts": "workspace:*",
-    "jiti": "^2.4.0",
-    "pino": "^9.0.0",
-    "pino-pretty": "^11.0.0",
-    "ulid": "^2.3.0",
-    "zod": "^3.23.0"
+    "@qakit/contracts": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^20.14.0",
     "typescript": "^5.4.0",
     "vitest": "^1.6.0"
   },

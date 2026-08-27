@@ -1,37 +1,10 @@
-export type {
-  Artifact,
-  ArtifactManager,
-  AuthProvider,
-  ExecutionContext,
-  ExecutionSummary,
-  Extension,
-  Logger,
-  QakitConfig,
-  Reporter,
-  ResolvedConfig,
-  TestContext,
-  TestResult,
-} from '@qakit/contracts';
-export {
-  ConfigurationError,
-  ExecutionError,
-  FrameworkError,
-  IntegrationError,
-  QakitError,
-  ServiceKeys,
-  TimeoutError,
-} from '@qakit/contracts';
-export { createArtifactManager, FileArtifactManager } from './artifacts/manager.js';
-export { defineConfig } from './config/define.js';
-export { loadConfig } from './config/load.js';
-export { resolveConfig } from './config/resolve.js';
-export { validateConfig } from './config/validate.js';
-export { detectCI } from './context/ci.js';
-export { createExecutionContext } from './context/execution.js';
-export { createTestContext } from './context/test.js';
-export { createLifecycleManager, LifecycleManager } from './lifecycle/manager.js';
-export { createLogger } from './logging/create-logger.js';
-export { redactMeta, redactString, redactValue } from './logging/redact.js';
-export { summarizeExecution } from './results/summarize.js';
-export { InMemoryServiceRegistry } from './services/registry.js';
-export { CORE_VERSION } from './version.js';
+import { CONTRACTS_PACKAGE } from '@qakit/contracts';
+
+/**
+ * Phase 1.1 — core can depend on contracts.
+ * Phase 1.3 will add ConfigResolver, context, lifecycle.
+ */
+export const CORE_PACKAGE = '@qakit/core';
+export const CORE_VERSION = '0.1.0';
+
+export { CONTRACTS_PACKAGE };

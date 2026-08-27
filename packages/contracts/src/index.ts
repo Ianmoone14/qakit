@@ -1,7 +1,7 @@
 export type {
   Artifact,
   ArtifactInput,
-  ArtifactManager,
+  ArtifactStore,
   ArtifactType,
 } from './artifacts.js';
 export { ARTIFACT_TYPES } from './artifacts.js';
@@ -50,4 +50,4 @@ export type {
 export { EXECUTION_STATUSES, TEST_STATUSES } from './results.js';
 export type { ServiceKey, ServiceRegistry } from './services.js';
 export { ServiceKeys } from './services.js';
-export { QAKIT_NAME, QAKIT_VERSION } from './version.js';
+export { CONTRACTS_PACKAGE, CONTRACTS_VERSION, QAKIT_NAME } from './version.js';

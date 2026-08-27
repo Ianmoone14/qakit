@@ -1,7 +1,7 @@
 {
   "name": "@qakit/contracts",
   "version": "0.1.0",
-  "description": "Shared types, Zod schemas, and error classes for QAKit",
+  "description": "QAKit shared types, Zod schemas, and error classes",
   "type": "module",
   "exports": {
     ".": {

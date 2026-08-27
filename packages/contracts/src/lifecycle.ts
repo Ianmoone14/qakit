@@ -19,15 +19,9 @@ export interface LifecycleHooks {
 }
 
 export interface LifecycleHookOptions {
-  /**
-   * Lower values run first. Default: 100.
-   * Cleanup phases run in reverse order (LIFO).
-   */
+  /** Lower runs first. Default: 100. Cleanup runs in reverse (LIFO). */
   priority?: number;
-  /**
-   * When true, a failure stops the current phase (and the run, for before* phases).
-   * Cleanup still runs.
-   */
+  /** If true, failure stops the phase (and the run for before*). Cleanup still runs. */
   critical?: boolean;
   /** Timeout in milliseconds. Default: 30000. */
   timeout?: number;

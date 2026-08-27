@@ -1,7 +1,3 @@
-/**
- * Well-known service keys. Extensions register implementations;
- * core never hard-codes Playwright or HTTP types onto the context.
- */
 export const ServiceKeys = {
   Auth: 'qakit.auth',
   ApiClient: 'qakit.api.client',
@@ -12,6 +8,7 @@ export const ServiceKeys = {
 
 export type ServiceKey = (typeof ServiceKeys)[keyof typeof ServiceKeys] | string;
 
+/** Fixtures and resources. Core never puts Playwright types on the context. */
 export interface ServiceRegistry {
   register<T>(name: string, service: T): void;
   get<T>(name: string): T;

@@ -1,4 +1,4 @@
-import type { ArtifactManager } from './artifacts.js';
+import type { ArtifactStore } from './artifacts.js';
 import type { CIContext, FrameworkVersion } from './ci.js';
 import type { ResolvedConfig } from './config.js';
 import type { Logger } from './logging.js';
@@ -11,7 +11,7 @@ export interface ExecutionContext {
   startTime: Date;
   config: ResolvedConfig;
   logger: Logger;
-  artifacts: ArtifactManager;
+  artifacts: ArtifactStore;
   framework: FrameworkVersion;
   services: ServiceRegistry;
   ci?: CIContext;

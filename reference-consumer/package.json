@@ -6,18 +6,13 @@
   "scripts": {
     "build": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "test:ui": "playwright test",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "clean": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true })\""
+    "clean": "node --input-type=module -e \"process.exit(0)\""
   },
   "dependencies": {
-    "@qakit/api": "workspace:*",
-    "@qakit/core": "workspace:*",
-    "@qakit/playwright": "workspace:*"
+    "@qakit/core": "workspace:*"
   },
   "devDependencies": {
-    "@playwright/test": "^1.44.0",
-    "@types/node": "^20.14.0",
     "typescript": "^5.4.0",
     "vitest": "^1.6.0"
   }

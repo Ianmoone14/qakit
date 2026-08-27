@@ -24,7 +24,8 @@ export interface Artifact {
 
 export type ArtifactInput = Omit<Artifact, 'id' | 'timestamp'>;
 
-export interface ArtifactManager {
+/** Filesystem first. Object storage later must not require a contract break. */
+export interface ArtifactStore {
   save(artifact: ArtifactInput): Promise<Artifact>;
   getAll(): Artifact[];
   getByTest(testId: string): Artifact[];

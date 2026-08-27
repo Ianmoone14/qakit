@@ -1,45 +1,14 @@
 # QAKit
 
-Internal QA automation platform for independent teams. Core stays small and generic. Projects own domain logic.
+Internal TypeScript QA platform. Small core, consumed by independent teams. Playwright stays native.
 
-## Packages
+## Status
 
-| Package | Role |
-| --- | --- |
-| `@qakit/contracts` | Types, Zod schemas, error classes |
-| `@qakit/core` | Config, execution context, lifecycle, logging, artifacts |
-| `@qakit/playwright` | Thin Playwright session + artifact hooks |
-| `@qakit/api` | Generic HTTP client with auth and logging |
-| `@qakit/cli` | `qakit init` and `qakit version` |
+Phase 1 foundation:
 
-## Consume
-
-```ts
-import { defineConfig } from '@qakit/core';
-import { playwrightExtension } from '@qakit/playwright';
-import { apiExtension } from '@qakit/api';
-
-export default defineConfig({
-  project: 'example-project',
-  environment: 'development',
-  baseUrl: 'https://example.com',
-  extensions: [
-    playwrightExtension({ headless: true }),
-    apiExtension({ timeout: 30_000 }),
-  ],
-});
-```
-
-See `reference-consumer/` for a project that depends on these packages the same way a team would.
-
-## Config precedence
-
-1. Framework defaults
-2. `qakit.config.ts`
-3. `QAKIT_PROJECT`, `QAKIT_ENVIRONMENT`, `QAKIT_LOG_LEVEL`
-4. Runtime overrides
-
-## Scripts
+- `@qakit/contracts` — types, Zod schemas, error classes
+- `@qakit/core` — package shell (runtime starts with config in the next slice)
+- `reference-consumer` — imports public packages only
 
 ```bash
 pnpm install
@@ -48,8 +17,37 @@ pnpm test
 pnpm typecheck
 ```
 
-Requires Node.js 20+ and pnpm 9.
+Requires Node 20+ and [pnpm](https://pnpm.io) 9 (`corepack enable` or a local pnpm).
 
-## Versioning
+## Packages
 
-Use Changesets. Teams upgrade independently. `qakit upgrade` is not in this foundation.
+| Package | Role |
+| --- | --- |
+| `@qakit/contracts` | Shared types, config schema, errors. No I/O. |
+| `@qakit/core` | Runtime (config, context, lifecycle). Depends on contracts only. |
+
+Later packages (`@qakit/playwright`, `@qakit/api`, `@qakit/cli`) are not in the workspace yet.
+
+Teams must import package names (`@qakit/core`), never `packages/*/src` internals. See [docs/architecture.md](docs/architecture.md).
+
+## Consume (when runtime exists)
+
+```ts
+import { defineConfig } from '@qakit/core';
+
+export default defineConfig({
+  project: 'example-project',
+  environment: 'development',
+});
+```
+
+`project` is required and must be lowercase kebab-case.
+
+## Layout
+
+```
+packages/contracts/   # public contract
+packages/core/        # runtime
+reference-consumer/   # example consumer
+docs/architecture.md  # package boundaries
+```

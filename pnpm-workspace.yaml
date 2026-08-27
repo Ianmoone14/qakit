@@ -1,3 +1,4 @@
 packages:
-  - "packages/*"
+  - "packages/contracts"
+  - "packages/core"
   - "reference-consumer"
