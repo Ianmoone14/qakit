@@ -23,9 +23,17 @@ Public API is `package.json` `exports` and `src/index.ts`. Deep imports are unsu
 - **Artifacts:** `Artifact`, `ArtifactStore`. Types include screenshot, trace, request, custom, …
 - **Results:** `TestResult` / `ExecutionSummary` — vendor-neutral statuses only.
 
-## Config (runtime will implement)
+## Config (runtime in `@qakit/core`)
 
-Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `QAKIT_PROJECT` / `QAKIT_ENVIRONMENT` / `QAKIT_LOG_LEVEL` → runtime overrides. Validate the merged object.
+Public API: `defineConfig`, `loadConfig`, `resolveConfig`, `validateConfig`.
+
+Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `QAKIT_PROJECT` / `QAKIT_ENVIRONMENT` / `QAKIT_LOG_LEVEL` → runtime overrides. Validate the merged object (`ConfigurationError` with a stable `code`).
+
+`loadConfig` reads `qakit.config.ts` from `cwd` or an explicit `path`.
+
+## Execution context (runtime in `@qakit/core`)
+
+`createExecutionContext` builds a run from `ResolvedConfig`. Logger and `ArtifactStore` are injected (implementations in 1.6 / 1.7). `services` is a `MemoryServiceRegistry` (no Playwright types on the context). `createTestContext` adds `TestInfo`. CI: GitLab / GitHub / generic.
 
 ## TypeScript
 

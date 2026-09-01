@@ -1,10 +1,26 @@
 import { CONTRACTS_PACKAGE } from '@qakit/contracts';
+import { CORE_PACKAGE, CORE_VERSION } from './package-info.js';
 
-/**
- * Phase 1.1 — core can depend on contracts.
- * Phase 1.3 will add ConfigResolver, context, lifecycle.
- */
-export const CORE_PACKAGE = '@qakit/core';
-export const CORE_VERSION = '0.1.0';
+export { CORE_PACKAGE, CORE_VERSION, CONTRACTS_PACKAGE };
 
-export { CONTRACTS_PACKAGE };
+export { CONFIG_ERROR_CODES } from './config/codes.js';
+export { defineConfig } from './config/define-config.js';
+export { loadConfig } from './config/load-config.js';
+export { resolveConfig } from './config/resolve-config.js';
+export type { ConfigLayer, EnvMap, LoadConfigOptions, ResolveConfigInput } from './config/types.js';
+export { validateConfig } from './config/validate-config.js';
+
+export { createExecutionContext, createTestContext } from './context/create-context.js';
+export type { CreateExecutionContextOptions } from './context/create-context.js';
+export { detectCIContext } from './context/detect-ci.js';
+export { MemoryServiceRegistry } from './context/memory-service-registry.js';
+
+export {
+  ConfigurationError,
+  FrameworkError,
+  type ExecutionContext,
+  type QakitConfig,
+  type ResolvedConfig,
+  type TestContext,
+  type TestInfo,
+} from '@qakit/contracts';

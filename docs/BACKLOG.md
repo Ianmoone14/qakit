@@ -2,7 +2,7 @@
 
 Copy into Jira / GitLab / Azure Boards. One epic ≈ one delivery slice. Capacity is **8 hours per week**.
 
-**Status:** 1.0–1.2 done. Next epic: **1.3 Config**.
+**Status:** 1.0–1.4 done. Next epic: **1.5 Lifecycle, extensions, fixtures**.
 
 Do not start Phase 2 until Phase 1.10 is done. Do not pull Icebox items into the current board.
 
@@ -17,8 +17,8 @@ Suggested Jira fields: Epic name, Description (goal + done when), child Tasks/St
 | 1.0 Alignment | 1 | Done |
 | 1.1 Monorepo | 1 | Done |
 | 1.2 Contracts | 1 | Done |
-| 1.3 Config | 1 | **Next** |
-| 1.4 Execution and test context | 1 | To do |
+| 1.3 Config | 1 | Done |
+| 1.4 Execution and test context | 1 | Done |
 | 1.5 Lifecycle, extensions, fixtures | 1 | To do |
 | 1.6 Logging and errors | 1 | To do |
 | 1.7 Artifacts and results | 1 | To do |
@@ -92,40 +92,40 @@ Critical path: 1.2 → 1.3 → 1.4 → 1.5 → (1.6 in parallel with 1.7) → 1.
 
 ## Epic 1.3 — Config
 
-**Status:** Next  
+**Status:** Done  
 **Package:** `@qakit/core`  
 **Goal:** A team can write `qakit.config.ts` and get a validated resolved config.  
 **Done when:** `defineConfig`, `loadConfig`, `resolveConfig`, and `validateConfig` are public on `@qakit/core`, with tests for merge order and `ConfigurationError`.
 
-### Tasks
+### Tasks (done)
 
-- [ ] **defineConfig** — typed helper; returns the same object; usable as `export default defineConfig({ project: 'checkout-api' })`
-- [ ] **validateConfig** — run Zod from contracts; throw `ConfigurationError` with a stable code (invalid project, invalid URL, etc.)
-- [ ] **resolveConfig** — merge: `DEFAULT_CONFIG` → file config → env → runtime overrides; `project` required after merge
-- [ ] **Env overlay** — `QAKIT_PROJECT`, `QAKIT_ENVIRONMENT`, `QAKIT_LOG_LEVEL` beat the file; runtime/CLI overrides beat env
-- [ ] **loadConfig** — load `qakit.config.ts` from cwd or given path; missing/invalid file → `ConfigurationError`
-- [ ] **Public exports** — only these four (plus existing package constants) from `@qakit/core`; no deep imports
-- [ ] **Tests** — valid minimal config; uppercase project rejected; env overrides file; runtime overrides env; bad URL; missing file
-- [ ] **README** — show a real `defineConfig` example that matches the implementation
+- [x] **defineConfig** — typed helper; returns the same object; usable as `export default defineConfig({ project: 'checkout-api' })`
+- [x] **validateConfig** — run Zod from contracts; throw `ConfigurationError` with a stable code (invalid project, invalid URL, etc.)
+- [x] **resolveConfig** — merge: `DEFAULT_CONFIG` → file config → env → runtime overrides; `project` required after merge
+- [x] **Env overlay** — `QAKIT_PROJECT`, `QAKIT_ENVIRONMENT`, `QAKIT_LOG_LEVEL` beat the file; runtime/CLI overrides beat env
+- [x] **loadConfig** — load `qakit.config.ts` from cwd or given path; missing/invalid file → `ConfigurationError`
+- [x] **Public exports** — only these four (plus existing package constants) from `@qakit/core`; no deep imports
+- [x] **Tests** — valid minimal config; uppercase project rejected; env overrides file; runtime overrides env; bad URL; missing file
+- [x] **README** — show a real `defineConfig` example that matches the implementation
 
 ---
 
 ## Epic 1.4 — Execution and test context
 
-**Status:** To do  
+**Status:** Done  
 **Depends on:** 1.3  
 **Goal:** One run has a stable identity, resolved config, logger/artifacts slots, CI info, and framework version.  
 **Done when:** Core can build `ExecutionContext` and `TestContext` without Playwright types on the context.
 
-### Tasks
+### Tasks (done)
 
-- [ ] Generate `executionId` (ULID or equivalent, unique per run)
-- [ ] Build `ExecutionContext` from `ResolvedConfig` (project, environment, startTime, config, services)
-- [ ] Detect `CIContext` from GitLab/GitHub env; fallback `generic` + raw env map
-- [ ] Attach `FrameworkVersion` (name, version, package versions) on every run
-- [ ] Build `TestContext` from execution context + `TestInfo` (testId, name, file, attempt, tags)
-- [ ] Leave `logger` and `artifacts` as injected dependencies (real implementations in 1.6 / 1.7)
-- [ ] Tests — id uniqueness; CI detection; test context inherits execution fields; no Playwright types in core
+- [x] Generate `executionId` (ULID or equivalent, unique per run)
+- [x] Build `ExecutionContext` from `ResolvedConfig` (project, environment, startTime, config, services)
+- [x] Detect `CIContext` from GitLab/GitHub env; fallback `generic` + raw env map
+- [x] Attach `FrameworkVersion` (name, version, package versions) on every run
+- [x] Build `TestContext` from execution context + `TestInfo` (testId, name, file, attempt, tags)
+- [x] Leave `logger` and `artifacts` as injected dependencies (real implementations in 1.6 / 1.7)
+- [x] Tests — id uniqueness; CI detection; test context inherits execution fields; no Playwright types in core
 
 ---
 

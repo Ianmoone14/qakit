@@ -1,7 +1,7 @@
 {
   "name": "@qakit/core",
   "version": "0.1.0",
-  "description": "QAKit core runtime. Implementation starts in Phase 1.3.",
+  "description": "QAKit core runtime: config loading and execution context.",
   "type": "module",
   "exports": {
     ".": {
@@ -9,7 +9,9 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
@@ -17,9 +19,12 @@
     "clean": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true })\""
   },
   "dependencies": {
-    "@qakit/contracts": "workspace:*"
+    "@qakit/contracts": "workspace:*",
+    "jiti": "^2.7.0",
+    "ulid": "^3.0.2"
   },
   "devDependencies": {
+    "@types/node": "^26.4.0",
     "typescript": "^5.4.0",
     "vitest": "^1.6.0"
   },
