@@ -2,7 +2,7 @@
 
 Copy into Jira / GitLab / Azure Boards. One epic ≈ one delivery slice. Capacity is **8 hours per week**.
 
-**Status:** 1.0–1.5 done. Next epic: **1.6 Logging and errors**.
+**Status:** 1.0–1.5 and 1.7 done. Next epic: **1.6 Logging and errors** (then 1.8).
 
 Do not start Phase 2 until Phase 1.10 is done. Do not pull Icebox items into the current board.
 
@@ -21,7 +21,7 @@ Suggested Jira fields: Epic name, Description (goal + done when), child Tasks/St
 | 1.4 Execution and test context | 1 | Done |
 | 1.5 Lifecycle, extensions, fixtures | 1 | Done |
 | 1.6 Logging and errors | 1 | To do |
-| 1.7 Artifacts and results | 1 | To do |
+| 1.7 Artifacts and results | 1 | Done |
 | 1.8 Core tests and reference consumer | 1 | To do |
 | 1.9 Thin Playwright | 1 | To do |
 | 1.10 Thin API | 1 | To do |
@@ -167,18 +167,18 @@ Critical path: 1.2 → 1.3 → 1.4 → 1.5 → (1.6 in parallel with 1.7) → 1.
 
 ## Epic 1.7 — Artifacts and results
 
-**Status:** To do  
+**Status:** Done  
 **Depends on:** 1.4 (parallel with 1.6)  
 **Goal:** Save files for a run and emit a vendor-neutral summary.  
 **Done when:** Screenshots/traces/custom files land under the configured directory; `ExecutionSummary` has counts and statuses only from the contract.
 
-### Tasks
+### Tasks (done)
 
-- [ ] Implement `ArtifactStore` on the filesystem (`artifacts.outputDir`)
-- [ ] Save / getAll / getByTest; id + timestamp assigned by the store
-- [ ] Build `TestResult` and `ExecutionSummary` (passed/failed/skipped/timedOut; run passed/failed/cancelled)
-- [ ] Attach artifact list onto the test result
-- [ ] Tests — file written, list by test, summary counts, no Allure/Xray fields
+- [x] Implement `ArtifactStore` on the filesystem (`artifacts.outputDir`)
+- [x] Save / getAll / getByTest; id + timestamp assigned by the store
+- [x] Build `TestResult` and `ExecutionSummary` (passed/failed/skipped/timedOut; run passed/failed/cancelled)
+- [x] Attach artifact list onto the test result
+- [x] Tests — file written, list by test, summary counts, no Allure/Xray fields
 
 ---
 

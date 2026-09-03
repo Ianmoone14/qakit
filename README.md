@@ -7,7 +7,7 @@ Internal TypeScript QA platform. Small core, consumed by independent teams. Play
 Phase 1 — config and execution context:
 
 - `@qakit/contracts` — types, Zod schemas, error classes
-- `@qakit/core` — config, execution/test context, lifecycle/extensions
+- `@qakit/core` — config, execution/test context, lifecycle/extensions, filesystem artifacts, results
 - `reference-consumer` — imports public packages only
 
 ```bash

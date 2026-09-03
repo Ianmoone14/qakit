@@ -33,11 +33,15 @@ Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `
 
 ## Execution context (runtime in `@qakit/core`)
 
-`createExecutionContext` builds a run from `ResolvedConfig`. Logger and `ArtifactStore` are injected (implementations in 1.6 / 1.7). `services` is a `MemoryServiceRegistry` (no Playwright types on the context). `createTestContext` adds `TestInfo`. CI: GitLab / GitHub / generic.
+`createExecutionContext` builds a run from `ResolvedConfig`. Logger is injected (implementation in 1.6). Artifacts use `FileSystemArtifactStore` (`artifacts.outputDir`). `services` is a `MemoryServiceRegistry` (no Playwright types on the context). `createTestContext` adds `TestInfo`. CI: GitLab / GitHub / generic.
 
 ## Lifecycle (runtime in `@qakit/core`)
 
 `LifecycleManager` runs the six phases. Lower `priority` runs first (default 100). `cleanup` / `testCleanup` run LIFO and always attempt every hook. `critical: true` stops the rest of a `before*` phase. Hook timeout (default 30s) throws `TimeoutError`. `registerExtensions` attaches hooks from `ResolvedConfig.extensions`.
+
+## Artifacts and results (runtime in `@qakit/core`)
+
+`FileSystemArtifactStore` copies files into `artifacts.outputDir` and assigns `id` + `timestamp`. `createTestResult` attaches `store.getByTest` (or an explicit list). `createExecutionSummary` uses vendor-neutral statuses only; `timedOut` tests count as `failed` in `counts` and fail the run unless status is set to `cancelled`.
 
 ## TypeScript
 

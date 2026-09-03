@@ -17,14 +17,22 @@ export { MemoryServiceRegistry } from './context/memory-service-registry.js';
 export { LifecycleManager } from './lifecycle/lifecycle-manager.js';
 export type { RegisterHookOptions } from './lifecycle/lifecycle-manager.js';
 
+export { FileSystemArtifactStore } from './artifacts/file-system-artifact-store.js';
+export type { FileSystemArtifactStoreOptions } from './artifacts/file-system-artifact-store.js';
+export { createExecutionSummary, createTestResult } from './results/create-result.js';
+export type { CreateExecutionSummaryOptions, CreateTestResultOptions } from './results/create-result.js';
+
 export {
   ConfigurationError,
   FrameworkError,
   TimeoutError,
+  type Artifact,
   type ExecutionContext,
+  type ExecutionSummary,
   type Extension,
   type QakitConfig,
   type ResolvedConfig,
   type TestContext,
   type TestInfo,
+  type TestResult,
 } from '@qakit/contracts';
