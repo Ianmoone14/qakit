@@ -2,7 +2,7 @@
 
 Copy into Jira / GitLab / Azure Boards. One epic ≈ one delivery slice. Capacity is **8 hours per week**.
 
-**Status:** 1.0–1.5 and 1.7 done. Next epic: **1.6 Logging and errors** (then 1.8).
+**Status:** 1.0–1.7 done. Next epic: **1.8 Core tests and reference consumer**.
 
 Do not start Phase 2 until Phase 1.10 is done. Do not pull Icebox items into the current board.
 
@@ -20,7 +20,7 @@ Suggested Jira fields: Epic name, Description (goal + done when), child Tasks/St
 | 1.3 Config | 1 | Done |
 | 1.4 Execution and test context | 1 | Done |
 | 1.5 Lifecycle, extensions, fixtures | 1 | Done |
-| 1.6 Logging and errors | 1 | To do |
+| 1.6 Logging and errors | 1 | Done |
 | 1.7 Artifacts and results | 1 | Done |
 | 1.8 Core tests and reference consumer | 1 | To do |
 | 1.9 Thin Playwright | 1 | To do |
@@ -150,18 +150,18 @@ Critical path: 1.2 → 1.3 → 1.4 → 1.5 → (1.6 in parallel with 1.7) → 1.
 
 ## Epic 1.6 — Logging and errors
 
-**Status:** To do  
+**Status:** Done  
 **Depends on:** 1.4 (can proceed in parallel with 1.7 after 1.5)  
 **Goal:** Real logger on the context; thrown errors become `QakitError` with codes.  
 **Done when:** Pretty and JSON logs work; child loggers carry run/test ids; unknown throws are wrapped.
 
-### Tasks
+### Tasks (done)
 
-- [ ] Implement `Logger` (debug/info/warn/error, pretty + json)
-- [ ] Honour `logging.level` and `logging.format` from resolved config
-- [ ] `logger.child` adds executionId / testId without mutating the parent
-- [ ] Map native errors to `QakitError` subclasses; keep `cause`
-- [ ] Tests — level filtering, json shape, child metadata, wrap vs pass-through of `QakitError`
+- [x] Implement `Logger` (debug/info/warn/error, pretty + json)
+- [x] Honour `logging.level` and `logging.format` from resolved config
+- [x] `logger.child` adds executionId / testId without mutating the parent
+- [x] Map native errors to `QakitError` subclasses; keep `cause`
+- [x] Tests — level filtering, json shape, child metadata, wrap vs pass-through of `QakitError`
 
 ---
 

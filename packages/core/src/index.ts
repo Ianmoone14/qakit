@@ -22,14 +22,21 @@ export type { FileSystemArtifactStoreOptions } from './artifacts/file-system-art
 export { createExecutionSummary, createTestResult } from './results/create-result.js';
 export type { CreateExecutionSummaryOptions, CreateTestResultOptions } from './results/create-result.js';
 
+export { createLogger, createLoggerFromConfig } from './logging/create-logger.js';
+export type { CreateLoggerOptions } from './logging/create-logger.js';
+export { wrapError } from './logging/wrap-error.js';
+
 export {
   ConfigurationError,
+  ExecutionError,
   FrameworkError,
+  QakitError,
   TimeoutError,
   type Artifact,
   type ExecutionContext,
   type ExecutionSummary,
   type Extension,
+  type Logger,
   type QakitConfig,
   type ResolvedConfig,
   type TestContext,

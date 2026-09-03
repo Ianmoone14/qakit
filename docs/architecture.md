@@ -33,7 +33,11 @@ Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `
 
 ## Execution context (runtime in `@qakit/core`)
 
-`createExecutionContext` builds a run from `ResolvedConfig`. Logger is injected (implementation in 1.6). Artifacts use `FileSystemArtifactStore` (`artifacts.outputDir`). `services` is a `MemoryServiceRegistry` (no Playwright types on the context). `createTestContext` adds `TestInfo`. CI: GitLab / GitHub / generic.
+`createExecutionContext` builds a run from `ResolvedConfig`. Pass `createLogger` / `createLoggerFromConfig` as `logger`. Artifacts use `FileSystemArtifactStore` (`artifacts.outputDir`). `services` is a `MemoryServiceRegistry` (no Playwright types on the context). `createTestContext` adds `TestInfo`. CI: GitLab / GitHub / generic.
+
+## Logging and errors (runtime in `@qakit/core`)
+
+`createLogger` honours `logging.level` and `logging.format` (pretty or json). `child()` copies context (e.g. `executionId`, `testId`) without mutating the parent. `wrapError` returns existing `QakitError`s unchanged and wraps native throws as `ExecutionError` with `cause`.
 
 ## Lifecycle (runtime in `@qakit/core`)
 
