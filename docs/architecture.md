@@ -35,6 +35,10 @@ Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `
 
 `createExecutionContext` builds a run from `ResolvedConfig`. Logger and `ArtifactStore` are injected (implementations in 1.6 / 1.7). `services` is a `MemoryServiceRegistry` (no Playwright types on the context). `createTestContext` adds `TestInfo`. CI: GitLab / GitHub / generic.
 
+## Lifecycle (runtime in `@qakit/core`)
+
+`LifecycleManager` runs the six phases. Lower `priority` runs first (default 100). `cleanup` / `testCleanup` run LIFO and always attempt every hook. `critical: true` stops the rest of a `before*` phase. Hook timeout (default 30s) throws `TimeoutError`. `registerExtensions` attaches hooks from `ResolvedConfig.extensions`.
+
 ## TypeScript
 
 `tsconfig.base.json` is strict (`exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`). `module` / `moduleResolution`: `NodeNext`.

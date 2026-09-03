@@ -7,7 +7,7 @@ Internal TypeScript QA platform. Small core, consumed by independent teams. Play
 Phase 1 — config and execution context:
 
 - `@qakit/contracts` — types, Zod schemas, error classes
-- `@qakit/core` — `defineConfig` / `loadConfig` / `resolveConfig` / `validateConfig`, plus execution/test context
+- `@qakit/core` — config, execution/test context, lifecycle/extensions
 - `reference-consumer` — imports public packages only
 
 ```bash
@@ -24,7 +24,7 @@ Requires Node 20+ and [pnpm](https://pnpm.io) 9 (`corepack enable` or a local pn
 | Package | Role |
 | --- | --- |
 | `@qakit/contracts` | Shared types, config schema, errors. No I/O. |
-| `@qakit/core` | Runtime (config, context). Depends on contracts only. |
+| `@qakit/core` | Runtime (config, context, lifecycle). Depends on contracts only. |
 
 Later packages (`@qakit/playwright`, `@qakit/api`, `@qakit/cli`) are not in the workspace yet.
 

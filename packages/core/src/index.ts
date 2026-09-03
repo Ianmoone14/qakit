@@ -14,11 +14,15 @@ export { createExecutionContext, createTestContext } from './context/create-cont
 export type { CreateExecutionContextOptions } from './context/create-context.js';
 export { detectCIContext } from './context/detect-ci.js';
 export { MemoryServiceRegistry } from './context/memory-service-registry.js';
+export { LifecycleManager } from './lifecycle/lifecycle-manager.js';
+export type { RegisterHookOptions } from './lifecycle/lifecycle-manager.js';
 
 export {
   ConfigurationError,
   FrameworkError,
+  TimeoutError,
   type ExecutionContext,
+  type Extension,
   type QakitConfig,
   type ResolvedConfig,
   type TestContext,

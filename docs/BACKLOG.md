@@ -2,7 +2,7 @@
 
 Copy into Jira / GitLab / Azure Boards. One epic ≈ one delivery slice. Capacity is **8 hours per week**.
 
-**Status:** 1.0–1.4 done. Next epic: **1.5 Lifecycle, extensions, fixtures**.
+**Status:** 1.0–1.5 done. Next epic: **1.6 Logging and errors**.
 
 Do not start Phase 2 until Phase 1.10 is done. Do not pull Icebox items into the current board.
 
@@ -19,7 +19,7 @@ Suggested Jira fields: Epic name, Description (goal + done when), child Tasks/St
 | 1.2 Contracts | 1 | Done |
 | 1.3 Config | 1 | Done |
 | 1.4 Execution and test context | 1 | Done |
-| 1.5 Lifecycle, extensions, fixtures | 1 | To do |
+| 1.5 Lifecycle, extensions, fixtures | 1 | Done |
 | 1.6 Logging and errors | 1 | To do |
 | 1.7 Artifacts and results | 1 | To do |
 | 1.8 Core tests and reference consumer | 1 | To do |
@@ -131,20 +131,20 @@ Critical path: 1.2 → 1.3 → 1.4 → 1.5 → (1.6 in parallel with 1.7) → 1.
 
 ## Epic 1.5 — Lifecycle, extensions, fixtures
 
-**Status:** To do  
+**Status:** Done  
 **Depends on:** 1.4  
 **Goal:** Extensions register hooks and services; core runs phases in order; cleanup always runs.  
 **Done when:** A sample extension can hook `beforeTest` and `register` a service; core still has no Playwright imports.
 
-### Tasks
+### Tasks (done)
 
-- [ ] Implement `ServiceRegistry` (`register`, `get`, `tryGet`, `has`)
-- [ ] Implement `LifecycleManager` for the six phases
-- [ ] Hook options: priority (lower first), timeout (default 30s), `critical` (failure stops the phase)
-- [ ] Cleanup / testCleanup always run, LIFO, even after a failure
-- [ ] Register extensions from resolved config; run their hooks
-- [ ] Timeout on a hook → `TimeoutError`; critical failure stops `before*`
-- [ ] Tests — order, priority, LIFO cleanup, non-critical failure continues, critical failure stops, timeout, service get/missing
+- [x] Implement `ServiceRegistry` (`register`, `get`, `tryGet`, `has`)
+- [x] Implement `LifecycleManager` for the six phases
+- [x] Hook options: priority (lower first), timeout (default 30s), `critical` (failure stops the phase)
+- [x] Cleanup / testCleanup always run, LIFO, even after a failure
+- [x] Register extensions from resolved config; run their hooks
+- [x] Timeout on a hook → `TimeoutError`; critical failure stops `before*`
+- [x] Tests — order, priority, LIFO cleanup, non-critical failure continues, critical failure stops, timeout, service get/missing
 
 ---
 
