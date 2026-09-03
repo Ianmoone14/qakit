@@ -10,7 +10,8 @@
     "clean": "node --input-type=module -e \"process.exit(0)\""
   },
   "dependencies": {
-    "@qakit/core": "workspace:*"
+    "@qakit/core": "workspace:*",
+    "@qakit/playwright": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.4.0",

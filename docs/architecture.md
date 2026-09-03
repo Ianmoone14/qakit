@@ -8,6 +8,7 @@ Rules for anyone changing QAKit. Plan and hours: [plan.xlsx](plan.xlsx).
 | --- | --- | --- |
 | `@qakit/contracts` | Zod | I/O, Playwright, HTTP |
 | `@qakit/core` | contracts | Browser APIs, domain clients, `if project X` |
+| `@qakit/playwright` | core + Playwright | Action wrappers, POM, project-specific pages |
 
 Public API is `package.json` `exports` and `src/index.ts`. Deep imports are unsupported.
 
@@ -47,9 +48,13 @@ Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `
 
 `FileSystemArtifactStore` copies files into `artifacts.outputDir` and assigns `id` + `timestamp`. `createTestResult` attaches `store.getByTest` (or an explicit list). `createExecutionSummary` uses vendor-neutral statuses only; `timedOut` tests count as `failed` in `counts` and fail the run unless status is set to `cancelled`.
 
+## Playwright (`@qakit/playwright`)
+
+`registerPlaywright` launches Chromium, registers `ServiceKeys.PlaywrightBrowser` / `Context` / `Page`, and closes them in `testCleanup` / `cleanup` (LIFO). Teams use native `page.goto` and locators. Optional `screenshotOnFailure` / `traceOnFailure` write files then `ArtifactStore.save`. Browsers are not downloaded on install — run `pnpm --filter @qakit/playwright exec playwright install chromium`.
+
 ## Reference consumer
 
-`reference-consumer` is the stand-in team: `qakit.config.ts` + `runExample` import only `@qakit/core`. It loads config, runs hooks, writes a log and an artifact, and can fail with `CHECKOUT_FAILED`. No Playwright.
+`reference-consumer` is the stand-in team: `qakit.config.ts` + `runExample` import `@qakit/core`. It loads config, runs hooks, writes a log and an artifact, and can fail with `CHECKOUT_FAILED`. UI example: `runPlaywrightExample` imports `@qakit/playwright` and calls native `page.goto`.
 
 ## TypeScript
 

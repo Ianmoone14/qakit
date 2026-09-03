@@ -2,7 +2,7 @@
 
 Copy into Jira / GitLab / Azure Boards. One epic ≈ one delivery slice. Capacity is **8 hours per week**.
 
-**Status:** 1.0–1.8 done. Next epic: **1.9 Thin Playwright**.
+**Status:** 1.0–1.9 done. Next epic: **1.10 Thin API**.
 
 Do not start Phase 2 until Phase 1.10 is done. Do not pull Icebox items into the current board.
 
@@ -23,7 +23,7 @@ Suggested Jira fields: Epic name, Description (goal + done when), child Tasks/St
 | 1.6 Logging and errors | 1 | Done |
 | 1.7 Artifacts and results | 1 | Done |
 | 1.8 Core tests and reference consumer | 1 | Done |
-| 1.9 Thin Playwright | 1 | To do |
+| 1.9 Thin Playwright | 1 | Done |
 | 1.10 Thin API | 1 | To do |
 | 2.1 CLI init and version | 2 | Later |
 | 2.2 Release and publish | 2 | Later |
@@ -201,21 +201,21 @@ Critical path: 1.2 → 1.3 → 1.4 → 1.5 → (1.6 in parallel with 1.7) → 1.
 
 ## Epic 1.9 — Thin Playwright
 
-**Status:** To do  
+**Status:** Done  
 **Depends on:** 1.8  
-**Package:** new `@qakit/playwright`  
+**Package:** `@qakit/playwright`  
 **Goal:** Attach native Playwright to the service registry. No click/fill/locator wrappers.  
 **Done when:** A consumer test can `services.get(ServiceKeys.PlaywrightPage)` and use native Playwright; core still does not import Playwright.
 
-### Tasks
+### Tasks (done)
 
-- [ ] New workspace package `@qakit/playwright` depending on core + `playwright-core` / playwright
-- [ ] Extension starts browser/context/page and registers ServiceKeys
-- [ ] Close browser in cleanup (LIFO)
-- [ ] Optional trace/screenshot on failure via ArtifactStore (native PW APIs)
-- [ ] Reference consumer (or a small example) runs one native `page.goto` test
-- [ ] Tests — keys registered; cleanup closes browser; core package has no playwright dependency
-- [ ] Explicit non-goal: no `qakit.click`, no custom expect, no page-object library
+- [x] New workspace package `@qakit/playwright` depending on core + Playwright
+- [x] Extension starts browser/context/page and registers ServiceKeys
+- [x] Close browser in cleanup (LIFO)
+- [x] Optional trace/screenshot on failure via ArtifactStore (native PW APIs)
+- [x] Reference consumer runs one native `page.goto` test
+- [x] Tests — keys registered; cleanup closes browser; core package has no playwright dependency
+- [x] Explicit non-goal: no `qakit.click`, no custom expect, no page-object library
 
 ---
 

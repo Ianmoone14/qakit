@@ -4,11 +4,12 @@ Internal TypeScript QA platform. Small core, consumed by independent teams. Play
 
 ## Status
 
-Phase 1 runtime is in place (config through results). Next: thin Playwright, then thin API.
+Phase 1 runtime is in place through thin Playwright. Next: thin API.
 
 - `@qakit/contracts` — types, Zod schemas, error classes
 - `@qakit/core` — config, context, lifecycle, logging, artifacts, results
-- `reference-consumer` — example team project (public imports only, no UI)
+- `@qakit/playwright` — native Playwright on the service registry (no action wrappers)
+- `reference-consumer` — example team project (public imports only)
 
 ```bash
 pnpm install
@@ -25,14 +26,21 @@ Requires Node 20+ and [pnpm](https://pnpm.io) 9 (`corepack enable` or a local pn
 | --- | --- |
 | `@qakit/contracts` | Shared types, config schema, errors. No I/O. |
 | `@qakit/core` | Runtime. Depends on contracts only. No Playwright. |
+| `@qakit/playwright` | Chromium + native `page`. No `qakit.click` / POM. |
 
-Later packages (`@qakit/playwright`, `@qakit/api`, `@qakit/cli`) are not in the workspace yet.
+Later packages (`@qakit/api`, `@qakit/cli`) are not in the workspace yet.
+
+UI tests need a Chromium binary once per machine:
+
+```bash
+pnpm --filter @qakit/playwright exec playwright install chromium
+```
 
 Teams must import package names (`@qakit/core`), never `packages/*/src` internals. See [docs/architecture.md](docs/architecture.md). Plan and hours: [docs/plan.xlsx](docs/plan.xlsx). Epics and tasks: [docs/BACKLOG.md](docs/BACKLOG.md).
 
-## Consume (core today — no browser yet)
+## Consume
 
-A team repo looks like `reference-consumer/`: `qakit.config.ts`, tests that import `@qakit/core` only.
+A team repo looks like `reference-consumer/`: `qakit.config.ts`, tests that import `@qakit/core` (and `@qakit/playwright` for UI).
 
 `qakit.config.ts`:
 
@@ -47,7 +55,7 @@ export default defineConfig({
 
 `project` is required and must be lowercase kebab-case.
 
-A run (still no Playwright — UI is epic 1.9):
+A run without a browser:
 
 ```ts
 import {
@@ -82,11 +90,25 @@ const summary = createExecutionSummary({ ctx: execution, results: [result] });
 
 Invalid config throws `ConfigurationError` with a stable `code`. Native throws become `ExecutionError` via `wrapError`; existing `QakitError`s pass through.
 
+UI (native Playwright — no wrappers):
+
+```ts
+import { ServiceKeys } from '@qakit/core';
+import { registerPlaywright, type Page } from '@qakit/playwright';
+
+registerPlaywright(manager, { headless: true, screenshotOnFailure: true });
+await manager.runBeforeExecution(execution);
+await manager.runBeforeTest(test);
+const page = test.services.get<Page>(ServiceKeys.PlaywrightPage);
+await page.goto('about:blank');
+```
+
 ## Layout
 
 ```
 packages/contracts/   # public contract
 packages/core/        # runtime
+packages/playwright/  # native Playwright extension
 reference-consumer/   # example consumer
 docs/architecture.md  # package boundaries
 docs/plan.xlsx        # plan + hours log (Excel)

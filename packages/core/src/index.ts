@@ -36,6 +36,8 @@ export {
   type ExecutionContext,
   type ExecutionSummary,
   type Extension,
+  type LifecycleHookOptions,
+  type LifecyclePhase,
   type Logger,
   type QakitConfig,
   type ResolvedConfig,
