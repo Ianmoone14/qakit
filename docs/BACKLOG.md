@@ -2,7 +2,7 @@
 
 Copy into Jira / GitLab / Azure Boards. One epic ≈ one delivery slice. Capacity is **8 hours per week**.
 
-**Status:** 1.0–1.7 done. Next epic: **1.8 Core tests and reference consumer**.
+**Status:** 1.0–1.8 done. Next epic: **1.9 Thin Playwright**.
 
 Do not start Phase 2 until Phase 1.10 is done. Do not pull Icebox items into the current board.
 
@@ -22,7 +22,7 @@ Suggested Jira fields: Epic name, Description (goal + done when), child Tasks/St
 | 1.5 Lifecycle, extensions, fixtures | 1 | Done |
 | 1.6 Logging and errors | 1 | Done |
 | 1.7 Artifacts and results | 1 | Done |
-| 1.8 Core tests and reference consumer | 1 | To do |
+| 1.8 Core tests and reference consumer | 1 | Done |
 | 1.9 Thin Playwright | 1 | To do |
 | 1.10 Thin API | 1 | To do |
 | 2.1 CLI init and version | 2 | Later |
@@ -184,18 +184,18 @@ Critical path: 1.2 → 1.3 → 1.4 → 1.5 → (1.6 in parallel with 1.7) → 1.
 
 ## Epic 1.8 — Core tests and reference consumer
 
-**Status:** To do  
+**Status:** Done  
 **Depends on:** 1.5, 1.6, 1.7  
 **Goal:** Core behaviour is covered; the consumer looks like a real team.  
 **Done when:** Reference consumer has `qakit.config.ts` and a fake test that loads config, runs hooks, writes a log and an artifact, and fails with a coded error.
 
-### Tasks
+### Tasks (done)
 
-- [ ] Expand `@qakit/core` unit tests for the public runtime API
-- [ ] Reference consumer: `qakit.config.ts` via `defineConfig`
-- [ ] Reference consumer: one passing and one failing example (no Playwright)
-- [ ] Consumer still imports `@qakit/core` only (no `packages/*/src`)
-- [ ] README: how a team uses core today (config + run context, still no UI)
+- [x] Expand `@qakit/core` unit tests for the public runtime API
+- [x] Reference consumer: `qakit.config.ts` via `defineConfig`
+- [x] Reference consumer: one passing and one failing example (no Playwright)
+- [x] Consumer still imports `@qakit/core` only (no `packages/*/src`)
+- [x] README: how a team uses core today (config + run context, still no UI)
 
 ---
 

@@ -47,6 +47,10 @@ Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `
 
 `FileSystemArtifactStore` copies files into `artifacts.outputDir` and assigns `id` + `timestamp`. `createTestResult` attaches `store.getByTest` (or an explicit list). `createExecutionSummary` uses vendor-neutral statuses only; `timedOut` tests count as `failed` in `counts` and fail the run unless status is set to `cancelled`.
 
+## Reference consumer
+
+`reference-consumer` is the stand-in team: `qakit.config.ts` + `runExample` import only `@qakit/core`. It loads config, runs hooks, writes a log and an artifact, and can fail with `CHECKOUT_FAILED`. No Playwright.
+
 ## TypeScript
 
 `tsconfig.base.json` is strict (`exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`). `module` / `moduleResolution`: `NodeNext`.

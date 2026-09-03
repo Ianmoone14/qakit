@@ -39,6 +39,7 @@ export {
   type Logger,
   type QakitConfig,
   type ResolvedConfig,
+  ServiceKeys,
   type TestContext,
   type TestInfo,
   type TestResult,
