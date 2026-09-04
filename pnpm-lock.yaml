@@ -34,6 +34,28 @@ importers:
         specifier: ^1.6.0
         version: 1.6.1(@types/node@26.4.0)
 
+  packages/cli:
+    dependencies:
+      '@qakit/api':
+        specifier: workspace:*
+        version: link:../api
+      '@qakit/core':
+        specifier: workspace:*
+        version: link:../core
+      '@qakit/playwright':
+        specifier: workspace:*
+        version: link:../playwright
+    devDependencies:
+      '@types/node':
+        specifier: ^26.4.0
+        version: 26.4.0
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.1(@types/node@26.4.0)
+
   packages/contracts:
     dependencies:
       zod:

@@ -10,6 +10,7 @@ Rules for anyone changing QAKit. Plan and hours: [plan.xlsx](plan.xlsx).
 | `@qakit/core` | contracts | Browser APIs, domain clients, `if project X` |
 | `@qakit/playwright` | core + Playwright | Action wrappers, POM, project-specific pages |
 | `@qakit/api` | core | Domain HTTP clients (SAP, finance, …) |
+| `@qakit/cli` | core + adapters | Team test code, domain clients |
 
 Public API is `package.json` `exports` and `src/index.ts`. Deep imports are unsupported.
 
@@ -56,6 +57,10 @@ Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `
 ## API (`@qakit/api`)
 
 `registerApi` registers a generic `fetch` client on `ServiceKeys.ApiClient`. `request({ method, url, headers, body, timeout })` merges `AuthProvider.getHeaders` (option or `ServiceKeys.Auth`). Relative URLs use `config.baseUrl`. 4xx/5xx → `IntegrationError`; abort → `TimeoutError`; network → `IntegrationError`. Optional `saveArtifacts` writes request/response files through `ArtifactStore`. No SAP/finance clients.
+
+## CLI (`@qakit/cli`)
+
+Binary name is `qakit` (not `qa`). `qakit init <name>` writes a consumer folder (`package.json` with pinned `@qakit/core` / playwright / api, `qakit.config.ts`, sample test, gitignore). Non-empty directories require `--force`. `qakit version` prints the CLI version plus `@qakit/*` packages resolved from the current project.
 
 ## Reference consumer
 

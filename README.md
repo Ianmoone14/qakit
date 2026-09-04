@@ -4,12 +4,13 @@ Internal TypeScript QA platform. Small core, consumed by independent teams. Play
 
 ## Status
 
-Phase 1 is complete (core, thin Playwright, thin API). Next: Phase 2 CLI.
+Phase 1 is complete. Phase 2 CLI init/version is in place. Next: release and publish.
 
 - `@qakit/contracts` — types, Zod schemas, error classes
 - `@qakit/core` — config, context, lifecycle, logging, artifacts, results
 - `@qakit/playwright` — native Playwright on the service registry (no action wrappers)
 - `@qakit/api` — generic HTTP client on the service registry (no domain clients)
+- `@qakit/cli` — `qakit init` and `qakit version`
 - `reference-consumer` — example team project (public imports only)
 
 ```bash
@@ -29,8 +30,7 @@ Requires Node 20+ and [pnpm](https://pnpm.io) 9 (`corepack enable` or a local pn
 | `@qakit/core` | Runtime. Depends on contracts only. No Playwright. |
 | `@qakit/playwright` | Chromium + native `page`. No `qakit.click` / POM. |
 | `@qakit/api` | Generic HTTP `request`. No SAP/finance clients. |
-
-Later package: `@qakit/cli` is not in the workspace yet.
+| `@qakit/cli` | `qakit init` / `qakit version`. |
 
 UI tests need a Chromium binary once per machine:
 
@@ -117,6 +117,15 @@ const client = test.services.get<ApiClient>(ServiceKeys.ApiClient);
 const response = await client.request({ method: 'GET', url: '/health' });
 ```
 
+Scaffold a new team repo:
+
+```bash
+pnpm --filter @qakit/cli exec qakit init checkout-api
+cd checkout-api
+pnpm install
+qakit version
+```
+
 ## Layout
 
 ```
@@ -124,6 +133,7 @@ packages/contracts/   # public contract
 packages/core/        # runtime
 packages/playwright/  # native Playwright extension
 packages/api/         # generic HTTP client
+packages/cli/         # qakit init / version
 reference-consumer/   # example consumer
 docs/architecture.md  # package boundaries
 docs/plan.xlsx        # plan + hours log (Excel)

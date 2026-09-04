@@ -2,7 +2,7 @@
 
 Copy into Jira / GitLab / Azure Boards. One epic ≈ one delivery slice. Capacity is **8 hours per week**.
 
-**Status:** 1.0–1.10 done. Phase 1 complete. Next: Phase 2 CLI.
+**Status:** 1.0–2.1 done. Next epic: **2.2 Release and publish**.
 
 Do not start Phase 2 until Phase 1.10 is done. Do not pull Icebox items into the current board.
 
@@ -25,7 +25,7 @@ Suggested Jira fields: Epic name, Description (goal + done when), child Tasks/St
 | 1.8 Core tests and reference consumer | 1 | Done |
 | 1.9 Thin Playwright | 1 | Done |
 | 1.10 Thin API | 1 | Done |
-| 2.1 CLI init and version | 2 | Later |
+| 2.1 CLI init and version | 2 | Done |
 | 2.2 Release and publish | 2 | Later |
 | 2.3 Upgrade command | 2 | Later |
 | 3.1 First-team pilot | 3 | Later |
@@ -243,18 +243,18 @@ Critical path: 1.2 → 1.3 → 1.4 → 1.5 → (1.6 in parallel with 1.7) → 1.
 
 ## Epic 2.1 — CLI init and version
 
-**Status:** Later (Phase 2)  
-**Package:** new `@qakit/cli`, binary name `qakit` (not `qa`)  
+**Status:** Done  
+**Package:** `@qakit/cli`, binary name `qakit` (not `qa`)  
 **Goal:** A team can scaffold a project and see which platform version they have.  
 **Done when:** `qakit init` writes a consumer folder that installs and loads config; `qakit version` prints core (and adapter) versions.
 
-### Tasks
+### Tasks (done)
 
-- [ ] Package `@qakit/cli` with `qakit` bin
-- [ ] `qakit init <name>` — package.json, `qakit.config.ts`, sample test, gitignore
-- [ ] Init pins current `@qakit/core` (and playwright/api when present)
-- [ ] `qakit version` — reads installed package versions
-- [ ] Tests — generated project typechecks; init is idempotent enough to not trash an existing repo without a flag
+- [x] Package `@qakit/cli` with `qakit` bin
+- [x] `qakit init <name>` — package.json, `qakit.config.ts`, sample test, gitignore
+- [x] Init pins current `@qakit/core` (and playwright/api when present)
+- [x] `qakit version` — reads installed package versions
+- [x] Tests — generated project typechecks; init is idempotent enough to not trash an existing repo without a flag
 
 ---
 

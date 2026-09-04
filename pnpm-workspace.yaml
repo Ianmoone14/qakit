@@ -3,4 +3,5 @@ packages:
   - "packages/core"
   - "packages/playwright"
   - "packages/api"
+  - "packages/cli"
   - "reference-consumer"
