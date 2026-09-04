@@ -1,7 +1,7 @@
 {
   "name": "@qakit/cli",
   "version": "0.1.0",
-  "description": "QAKit CLI: init a consumer project and print installed package versions.",
+  "description": "QAKit CLI: init a consumer project, print versions, and upgrade pinned @qakit packages.",
   "license": "UNLICENSED",
   "publishConfig": {
     "access": "restricted"

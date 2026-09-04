@@ -1,12 +1,15 @@
 import { CliError } from './cli-error.js';
 import { initProject } from './init.js';
 import { HELP_TEXT, parseArgs } from './parse-args.js';
+import { formatUpgradeReport, upgradeProject } from './upgrade.js';
 import { formatVersionReport, readInstalledQakitVersions } from './versions.js';
 
 export interface RunCliIo {
   cwd?: string;
   stdout?: (line: string) => void;
   stderr?: (line: string) => void;
+  /** Test seam. Default: the running CLI's platform version. */
+  targetVersion?: string;
 }
 
 export async function runCli(argv: readonly string[], io: RunCliIo = {}): Promise<number> {
@@ -22,6 +25,19 @@ export async function runCli(argv: readonly string[], io: RunCliIo = {}): Promis
     }
     if (args.command === 'version') {
       stdout(formatVersionReport(readInstalledQakitVersions(args.cwd)));
+      return 0;
+    }
+    if (args.command === 'upgrade') {
+      const result = upgradeProject({
+        cwd: args.cwd,
+        ...(args.major ? { allowMajor: true } : {}),
+        ...(args.dryRun ? { dryRun: true } : {}),
+        ...(io.targetVersion !== undefined ? { targetVersion: io.targetVersion } : {}),
+      });
+      stdout(formatUpgradeReport(result));
+      if (result.updated.length === 0 && result.blockedMajor.length > 0) {
+        return 1;
+      }
       return 0;
     }
 

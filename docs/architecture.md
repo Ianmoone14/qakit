@@ -62,7 +62,7 @@ Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `
 
 ## CLI (`@qakit/cli`)
 
-Binary name is `qakit` (not `qa`). `qakit init <name>` writes a consumer folder (`package.json` with pinned `@qakit/core` / playwright / api, `qakit.config.ts`, sample test, gitignore). Non-empty directories require `--force`. `qakit version` prints the CLI version plus `@qakit/*` packages resolved from the current project.
+Binary name is `qakit` (not `qa`). `qakit init <name>` writes a consumer folder (`package.json` with pinned `@qakit/core` / playwright / api, `qakit.config.ts`, sample test, gitignore). Non-empty directories require `--force`. `qakit version` prints the CLI version plus `@qakit/*` packages resolved from the current project. `qakit upgrade` rewrites only those pins in `package.json` to the running CLI’s platform version (patch/minor by default, `--major` for a major). It does not touch team tests or run install.
 
 ## Release
 

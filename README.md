@@ -4,13 +4,13 @@ Internal TypeScript QA platform. Small core, consumed by independent teams. Play
 
 ## Status
 
-Phase 1 is complete. CLI init/version and the publish pipeline are in place. Next: `qakit upgrade`.
+Phase 1 is complete. CLI init, version, upgrade, and the publish pipeline are in place. Next: first-team pilot.
 
 - `@qakit/contracts` — types, Zod schemas, error classes
 - `@qakit/core` — config, context, lifecycle, logging, artifacts, results
 - `@qakit/playwright` — native Playwright on the service registry (no action wrappers)
 - `@qakit/api` — generic HTTP client on the service registry (no domain clients)
-- `@qakit/cli` — `qakit init` and `qakit version`
+- `@qakit/cli` — `qakit init`, `qakit version`, `qakit upgrade`
 - `reference-consumer` — example team project (public imports only)
 
 ```bash
@@ -30,7 +30,7 @@ Requires Node 20+ and [pnpm](https://pnpm.io) 9 (`corepack enable` or a local pn
 | `@qakit/core` | Runtime. Depends on contracts only. No Playwright. |
 | `@qakit/playwright` | Chromium + native `page`. No `qakit.click` / POM. |
 | `@qakit/api` | Generic HTTP `request`. No SAP/finance clients. |
-| `@qakit/cli` | `qakit init` / `qakit version`. |
+| `@qakit/cli` | `qakit init` / `qakit version` / `qakit upgrade`. |
 
 UI tests need a Chromium binary once per machine:
 
@@ -124,6 +124,8 @@ pnpm --filter @qakit/cli exec qakit init checkout-api
 cd checkout-api
 pnpm install
 qakit version
+qakit upgrade
+pnpm install
 ```
 
 ## Install from the registry
@@ -159,7 +161,7 @@ packages/contracts/   # public contract
 packages/core/        # runtime
 packages/playwright/  # native Playwright extension
 packages/api/         # generic HTTP client
-packages/cli/         # qakit init / version
+packages/cli/         # qakit init / version / upgrade
 reference-consumer/   # example consumer
 .changeset/           # versioning
 .gitlab-ci.yml        # test + publish

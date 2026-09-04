@@ -6,6 +6,8 @@ export { parseArgs, HELP_TEXT } from './parse-args.js';
 export type { CliCommand, ParsedArgs } from './parse-args.js';
 export { runCli } from './run-cli.js';
 export type { RunCliIo } from './run-cli.js';
+export { upgradeProject, formatUpgradeReport, readPlatformReleaseVersion } from './upgrade.js';
+export type { UpgradeOptions, UpgradeResult } from './upgrade.js';
 export {
   formatVersionReport,
   readCliVersion,
