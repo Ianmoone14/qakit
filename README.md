@@ -4,11 +4,12 @@ Internal TypeScript QA platform. Small core, consumed by independent teams. Play
 
 ## Status
 
-Phase 1 runtime is in place through thin Playwright. Next: thin API.
+Phase 1 is complete (core, thin Playwright, thin API). Next: Phase 2 CLI.
 
 - `@qakit/contracts` — types, Zod schemas, error classes
 - `@qakit/core` — config, context, lifecycle, logging, artifacts, results
 - `@qakit/playwright` — native Playwright on the service registry (no action wrappers)
+- `@qakit/api` — generic HTTP client on the service registry (no domain clients)
 - `reference-consumer` — example team project (public imports only)
 
 ```bash
@@ -27,8 +28,9 @@ Requires Node 20+ and [pnpm](https://pnpm.io) 9 (`corepack enable` or a local pn
 | `@qakit/contracts` | Shared types, config schema, errors. No I/O. |
 | `@qakit/core` | Runtime. Depends on contracts only. No Playwright. |
 | `@qakit/playwright` | Chromium + native `page`. No `qakit.click` / POM. |
+| `@qakit/api` | Generic HTTP `request`. No SAP/finance clients. |
 
-Later packages (`@qakit/api`, `@qakit/cli`) are not in the workspace yet.
+Later package: `@qakit/cli` is not in the workspace yet.
 
 UI tests need a Chromium binary once per machine:
 
@@ -40,7 +42,7 @@ Teams must import package names (`@qakit/core`), never `packages/*/src` internal
 
 ## Consume
 
-A team repo looks like `reference-consumer/`: `qakit.config.ts`, tests that import `@qakit/core` (and `@qakit/playwright` for UI).
+A team repo looks like `reference-consumer/`: `qakit.config.ts`, tests that import `@qakit/core` (and `@qakit/playwright` / `@qakit/api` as needed).
 
 `qakit.config.ts`:
 
@@ -103,12 +105,25 @@ const page = test.services.get<Page>(ServiceKeys.PlaywrightPage);
 await page.goto('about:blank');
 ```
 
+HTTP (generic client — no domain wrappers):
+
+```ts
+import { ServiceKeys } from '@qakit/core';
+import { registerApi, type ApiClient } from '@qakit/api';
+
+registerApi(manager, { saveArtifacts: true });
+await manager.runBeforeTest(test);
+const client = test.services.get<ApiClient>(ServiceKeys.ApiClient);
+const response = await client.request({ method: 'GET', url: '/health' });
+```
+
 ## Layout
 
 ```
 packages/contracts/   # public contract
 packages/core/        # runtime
 packages/playwright/  # native Playwright extension
+packages/api/         # generic HTTP client
 reference-consumer/   # example consumer
 docs/architecture.md  # package boundaries
 docs/plan.xlsx        # plan + hours log (Excel)

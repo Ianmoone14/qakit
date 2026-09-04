@@ -2,7 +2,7 @@
 
 Copy into Jira / GitLab / Azure Boards. One epic ≈ one delivery slice. Capacity is **8 hours per week**.
 
-**Status:** 1.0–1.9 done. Next epic: **1.10 Thin API**.
+**Status:** 1.0–1.10 done. Phase 1 complete. Next: Phase 2 CLI.
 
 Do not start Phase 2 until Phase 1.10 is done. Do not pull Icebox items into the current board.
 
@@ -24,7 +24,7 @@ Suggested Jira fields: Epic name, Description (goal + done when), child Tasks/St
 | 1.7 Artifacts and results | 1 | Done |
 | 1.8 Core tests and reference consumer | 1 | Done |
 | 1.9 Thin Playwright | 1 | Done |
-| 1.10 Thin API | 1 | To do |
+| 1.10 Thin API | 1 | Done |
 | 2.1 CLI init and version | 2 | Later |
 | 2.2 Release and publish | 2 | Later |
 | 2.3 Upgrade command | 2 | Later |
@@ -221,21 +221,21 @@ Critical path: 1.2 → 1.3 → 1.4 → 1.5 → (1.6 in parallel with 1.7) → 1.
 
 ## Epic 1.10 — Thin API
 
-**Status:** To do  
+**Status:** Done  
 **Depends on:** 1.8  
-**Package:** new `@qakit/api`  
+**Package:** `@qakit/api`  
 **Goal:** Generic HTTP client as an extension.  
 **Done when:** A consumer can get a client from the registry, call HTTP, and store request/response artifacts; no domain clients in core.
 
-### Tasks
+### Tasks (done)
 
-- [ ] New workspace package `@qakit/api`
-- [ ] Generic client (method, url, headers, body, timeout) registered on `ServiceKeys.ApiClient`
-- [ ] Auth via `AuthProvider.getHeaders` (interface already in contracts)
-- [ ] Map HTTP/network failures to `IntegrationError` / `TimeoutError`
-- [ ] Optional request/response artifacts
-- [ ] Tests — success, 4xx/5xx, timeout, headers from auth provider
-- [ ] Explicit non-goal: no SAP/finance client in this package
+- [x] New workspace package `@qakit/api`
+- [x] Generic client (method, url, headers, body, timeout) registered on `ServiceKeys.ApiClient`
+- [x] Auth via `AuthProvider.getHeaders` (interface already in contracts)
+- [x] Map HTTP/network failures to `IntegrationError` / `TimeoutError`
+- [x] Optional request/response artifacts
+- [x] Tests — success, 4xx/5xx, timeout, headers from auth provider
+- [x] Explicit non-goal: no SAP/finance client in this package
 
 **Phase 1 exit:** a consumer can run one UI test and one API test on QAKit, with logs, artifacts, coded errors, and a normalized result.
 

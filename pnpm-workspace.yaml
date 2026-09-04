@@ -2,4 +2,5 @@ packages:
   - "packages/contracts"
   - "packages/core"
   - "packages/playwright"
+  - "packages/api"
   - "reference-consumer"
