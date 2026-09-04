@@ -2,6 +2,10 @@
   "name": "@qakit/cli",
   "version": "0.1.0",
   "description": "QAKit CLI: init a consumer project and print installed package versions.",
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "restricted"
+  },
   "type": "module",
   "bin": {
     "qakit": "./dist/bin.js"

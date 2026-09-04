@@ -2,6 +2,10 @@
   "name": "@qakit/core",
   "version": "0.1.0",
   "description": "QAKit core runtime: config, context, lifecycle, artifacts, and results.",
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "restricted"
+  },
   "type": "module",
   "exports": {
     ".": {

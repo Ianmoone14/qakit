@@ -2,7 +2,7 @@
 
 Copy into Jira / GitLab / Azure Boards. One epic ≈ one delivery slice. Capacity is **8 hours per week**.
 
-**Status:** 1.0–2.1 done. Next epic: **2.2 Release and publish**.
+**Status:** 1.0–2.2 done. Next epic: **2.3 Upgrade command**.
 
 Do not start Phase 2 until Phase 1.10 is done. Do not pull Icebox items into the current board.
 
@@ -26,7 +26,7 @@ Suggested Jira fields: Epic name, Description (goal + done when), child Tasks/St
 | 1.9 Thin Playwright | 1 | Done |
 | 1.10 Thin API | 1 | Done |
 | 2.1 CLI init and version | 2 | Done |
-| 2.2 Release and publish | 2 | Later |
+| 2.2 Release and publish | 2 | Done |
 | 2.3 Upgrade command | 2 | Later |
 | 3.1 First-team pilot | 3 | Later |
 | Icebox | — | Not now |
@@ -260,17 +260,17 @@ Critical path: 1.2 → 1.3 → 1.4 → 1.5 → (1.6 in parallel with 1.7) → 1.
 
 ## Epic 2.2 — Release and publish
 
-**Status:** Later (Phase 2)  
+**Status:** Done  
 **Goal:** Version and publish packages so teams install them; they do not clone the platform repo.  
 **Done when:** A changeset produces a new `@qakit/core` version on the agreed registry.
 
-### Tasks
+### Tasks (done)
 
-- [ ] Decide registry: GitLab npm / GitHub Packages / other internal npm (**open**)
-- [ ] Add Changesets
-- [ ] Semver rule: public API break = major; new optional API = minor; fix = patch
-- [ ] Publish pipeline for `@qakit/contracts`, `@qakit/core`, adapters, cli
-- [ ] Document how a team adds `"@qakit/core": "x.y.z"` in their own repo
+- [x] Decide registry: **GitLab npm** (SixSentix group), restricted `@qakit` scope
+- [x] Add Changesets (packages version together)
+- [x] Semver rule: public API break = major; new optional API = minor; fix = patch
+- [x] Publish pipeline for `@qakit/contracts`, `@qakit/core`, adapters, cli
+- [x] Document how a team adds `"@qakit/core": "x.y.z"` in their own repo
 
 ---
 
@@ -325,9 +325,8 @@ Create these epics only when a pilot asks for them. Not Phase 1.
 
 ---
 
-## Open decisions (block 2.2, not 1.3)
+## Open decisions
 
 - First consuming team and date
-- GitLab CI on day one vs local first
 - Xray/Allure in the v1 *story* vs later adapters
-- Package publish: internal registry vs git dependency
+- GitLab host (`gitlab.com` vs self-hosted) and the sixsentix group/project path for the npm registry URL

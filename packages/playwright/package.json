@@ -2,6 +2,10 @@
   "name": "@qakit/playwright",
   "version": "0.1.0",
   "description": "Thin Playwright extension for QAKit. Native APIs, no action wrappers.",
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "restricted"
+  },
   "type": "module",
   "exports": {
     ".": {

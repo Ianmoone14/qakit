@@ -1,0 +1,10 @@
+# Team install: SixSentix GitLab npm registry (not public npm).
+# Replace the host if GitLab is self-hosted. Group-level URL is preferred over project-level.
+# Example (gitlab.com group sixsentix — use the numeric group id from GitLab):
+#   @qakit:registry=https://gitlab.com/api/v4/groups/<GROUP_ID>/-/packages/npm/
+#   //gitlab.com/api/v4/groups/<GROUP_ID>/-/packages/npm/:_authToken=${GITLAB_TOKEN}
+#
+# GITLAB_TOKEN needs read_api / read_package_registry (or a Deploy Token with read_package_registry).
+
+@qakit:registry=https://gitlab.com/api/v4/packages/npm/
+//gitlab.com/api/v4/packages/npm/:_authToken=${GITLAB_TOKEN}

@@ -14,6 +14,8 @@ Rules for anyone changing QAKit. Plan and hours: [plan.xlsx](plan.xlsx).
 
 Public API is `package.json` `exports` and `src/index.ts`. Deep imports are unsupported.
 
+**Semver:** public API break = major; new optional API = minor; fix = patch. Publishable packages version together via Changesets. Registry: **GitLab npm** (SixSentix), restricted `@qakit` scope. The registry URL is set in CI / `.npmrc`, not hardcoded in package names.
+
 ## Contracts (`@qakit/contracts`)
 
 - **Config:** `qakitConfigSchema`, `QakitConfig`, `ResolvedConfig`, `DEFAULT_CONFIG`. Project names: lowercase kebab-case.
@@ -61,6 +63,10 @@ Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `
 ## CLI (`@qakit/cli`)
 
 Binary name is `qakit` (not `qa`). `qakit init <name>` writes a consumer folder (`package.json` with pinned `@qakit/core` / playwright / api, `qakit.config.ts`, sample test, gitignore). Non-empty directories require `--force`. `qakit version` prints the CLI version plus `@qakit/*` packages resolved from the current project.
+
+## Release
+
+`pnpm changeset` records a user-facing change. After `pnpm version-packages` lands on the default branch, the GitLab **publish** job runs `changeset publish` to the project npm registry. Teams install `"@qakit/core": "x.y.z"` with `.npmrc` from `.npmrc.example` (GitLab token, not public npm).
 
 ## Reference consumer
 

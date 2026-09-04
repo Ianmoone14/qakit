@@ -1,0 +1,41 @@
+image: node:20
+
+stages:
+  - test
+  - release
+
+cache:
+  key:
+    files:
+      - pnpm-lock.yaml
+  paths:
+    - .pnpm-store
+
+default:
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@9.0.0 --activate
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install
+
+test:
+  stage: test
+  script:
+    - pnpm --filter @qakit/playwright exec playwright install chromium --with-deps
+    - pnpm test
+    - pnpm typecheck
+
+# Publishes current package versions to this GitLab project's npm registry.
+# Run after `pnpm version-packages` has landed on the default branch.
+publish:
+  stage: release
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+  script:
+    - |
+      {
+        echo "@qakit:registry=${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/npm/"
+        echo "//${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}"
+      } >> .npmrc
+    - pnpm release

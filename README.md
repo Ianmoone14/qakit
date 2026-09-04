@@ -4,7 +4,7 @@ Internal TypeScript QA platform. Small core, consumed by independent teams. Play
 
 ## Status
 
-Phase 1 is complete. Phase 2 CLI init/version is in place. Next: release and publish.
+Phase 1 is complete. CLI init/version and the publish pipeline are in place. Next: `qakit upgrade`.
 
 - `@qakit/contracts` — types, Zod schemas, error classes
 - `@qakit/core` — config, context, lifecycle, logging, artifacts, results
@@ -126,6 +126,32 @@ pnpm install
 qakit version
 ```
 
+## Install from the registry
+
+Packages publish to the **SixSentix GitLab npm registry**, not public npm. Copy `.npmrc.example` into the team repo as `.npmrc`, point `@qakit` at the GitLab group/project registry, and set `GITLAB_TOKEN`. Then pin versions:
+
+```json
+{
+  "dependencies": {
+    "@qakit/core": "0.1.0",
+    "@qakit/playwright": "0.1.0",
+    "@qakit/api": "0.1.0",
+    "@qakit/cli": "0.1.0"
+  }
+}
+```
+
+Package names stay `@qakit/*` (the GitLab group is sixsentix; that does not need to match the npm scope).
+
+Platform versions move together. Semver: public API break = major; new optional API = minor; fix = patch.
+
+```bash
+pnpm changeset
+pnpm version-packages
+```
+
+Then run the GitLab **publish** job on the default branch.
+
 ## Layout
 
 ```
@@ -135,6 +161,9 @@ packages/playwright/  # native Playwright extension
 packages/api/         # generic HTTP client
 packages/cli/         # qakit init / version
 reference-consumer/   # example consumer
+.changeset/           # versioning
+.gitlab-ci.yml        # test + publish
+.github/workflows/    # CI while the repo is still on GitHub
 docs/architecture.md  # package boundaries
 docs/plan.xlsx        # plan + hours log (Excel)
 docs/BACKLOG.md       # epics and tasks

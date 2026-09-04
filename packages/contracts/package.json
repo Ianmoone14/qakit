@@ -2,6 +2,10 @@
   "name": "@qakit/contracts",
   "version": "0.1.0",
   "description": "QAKit shared types, Zod schemas, and error classes",
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "restricted"
+  },
   "type": "module",
   "exports": {
     ".": {
