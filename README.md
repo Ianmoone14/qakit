@@ -38,7 +38,7 @@ UI tests need a Chromium binary once per machine:
 pnpm --filter @qakit/playwright exec playwright install chromium
 ```
 
-Teams must import package names (`@qakit/core`), never `packages/*/src` internals. See [docs/architecture.md](docs/architecture.md). Plan and hours: [docs/plan.xlsx](docs/plan.xlsx). Epics and tasks: [docs/BACKLOG.md](docs/BACKLOG.md).
+Teams must import package names (`@qakit/core`), never `packages/*/src` internals. See [docs/architecture.md](docs/architecture.md). Slide deck (Phase 1 + 2): [docs/prezentacija.html](docs/prezentacija.html). Plan and hours: [docs/plan.xlsx](docs/plan.xlsx). Epics and tasks: [docs/BACKLOG.md](docs/BACKLOG.md).
 
 ## Consume
 
@@ -167,6 +167,7 @@ reference-consumer/   # example consumer
 .gitlab-ci.yml        # test + publish
 .github/workflows/    # CI while the repo is still on GitHub
 docs/architecture.md  # package boundaries
+docs/prezentacija.html # slide deck (Phase 1 + 2)
 docs/plan.xlsx        # plan + hours log (Excel)
 docs/BACKLOG.md       # epics and tasks
 ```

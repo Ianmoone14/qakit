@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QAKit — interna QA platforma</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #171e27;
+      --text: #eef2f6;
+      --muted: #93a0b0;
+      --accent: #3d9cf0;
+      --line: #2a3542;
+      --ok: #5ecf9a;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", system-ui, sans-serif;
+    }
+    .deck { height: 100%; }
+    .slide {
+      display: none;
+      height: 100%;
+      padding: 6vh 8vw 10vh;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .slide.on { display: flex; }
+    .kicker {
+      color: var(--accent);
+      font-size: 0.95rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin: 0 0 0.8rem;
+      font-weight: 600;
+    }
+    h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.15; margin: 0 0 1rem; font-weight: 650; }
+    h2 { font-size: clamp(1.6rem, 3.5vw, 2.4rem); margin: 0 0 1.2rem; font-weight: 650; }
+    p, li { font-size: clamp(1.05rem, 2vw, 1.35rem); line-height: 1.45; }
+    p { margin: 0 0 0.8rem; color: var(--text); }
+    .muted { color: var(--muted); }
+    ul { margin: 0; padding-left: 1.2rem; }
+    li { margin: 0.35rem 0; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem 2rem;
+    }
+    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+    .box {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+    }
+    .box h3 { margin: 0 0 0.5rem; font-size: 1.05rem; color: var(--accent); }
+    code, pre {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    }
+    pre {
+      background: #0b1015;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      overflow: auto;
+      font-size: clamp(0.8rem, 1.5vw, 1rem);
+      line-height: 1.4;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: clamp(0.95rem, 1.7vw, 1.2rem);
+    }
+    th, td {
+      text-align: left;
+      padding: 0.45rem 0.6rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    th { color: var(--muted); font-weight: 600; }
+    .bar {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 1.2rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      background: linear-gradient(transparent, var(--bg) 40%);
+    }
+    .bar b { color: var(--text); font-weight: 600; }
+    .title-sub { font-size: clamp(1.15rem, 2.2vw, 1.5rem); color: var(--muted); max-width: 40rem; }
+    .ok { color: var(--ok); }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+    @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+    @media print {
+      .bar { display: none; }
+      .slide { display: flex; height: auto; min-height: 100vh; page-break-after: always; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck" id="deck"></div>
+  <div class="bar">
+    <span>QAKit · Phase 1 + 2</span>
+    <span><b id="pos">1</b> / <span id="total">1</span> · ← → ili space</span>
+  </div>
+  <script>
+    const slides = [
+      {
+        html: `
+          <p class="kicker">SixSentix · interna platforma</p>
+          <h1>QAKit</h1>
+          <p class="title-sub">Zajednička šina za automation testove. Timovi voze svoje suite-ove. Jezgro se ne forkuje.</p>
+          <p class="muted" style="margin-top:2rem">Phase 1 (core + Playwright + API) i Phase 2 (CLI + publish) su gotove. Sledeće: prvi pravi tim.</p>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Problem</p>
+          <h2>30+ timova, 30 mini-frameworka</h2>
+          <ul>
+            <li>Svako smišlja config, log, screenshot, “šta je pad”, CI trag.</li>
+            <li>Fork jezgra čim treba “još jedno polje”.</li>
+            <li>Platform tim postaje bottleneck za SAP login, ne za šinu.</li>
+            <li>Čovek sa tima A ne prepoznaje suite tima B.</li>
+          </ul>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Šta je QAKit</p>
+          <h2>Interna TypeScript QA platforma</h2>
+          <div class="grid">
+            <div class="box">
+              <h3>Jeste</h3>
+              <p>Config, run ID, lifecycle, log, artifacti, kodirane greške, tanki Playwright, tanki HTTP, CLI, verzije.</p>
+            </div>
+            <div class="box">
+              <h3>Nije</h3>
+              <p>Njihov test suite, POM biblioteka, Xray ekran, drugi UI framework, centralni dashboard (to je kasnije, poseban servis).</p>
+            </div>
+          </div>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Model</p>
+          <h2>Dva gita, ne jedan</h2>
+          <pre>qakit (ti)                     checkout-tests (tim)
+packages/@qakit/*               qakit.config.ts
+publish → GitLab npm            tests/, pages/, urls.ts
+                                node_modules/@qakit/core</pre>
+          <p class="muted">Biblioteka živi kod tebe kao izvor, na registry-ju kao verzija, kod njih u node_modules. Njihovi testovi nikad u tvom gitu.</p>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Šta framework nameće</p>
+          <h2>Šina, ne jezik klikova</h2>
+          <ul>
+            <li><code>project</code> kebab-case (<code>checkout-api</code>).</li>
+            <li>Import <code>@qakit/core</code>, ne <code>packages/*/src</code>.</li>
+            <li>Statusi: passed / failed / skipped / timedOut.</li>
+            <li>Greške sa <code>code</code> (<code>ConfigurationError</code>, <code>TimeoutError</code>…).</li>
+            <li>Toolovi u fioci (<code>services</code>), ne <code>ctx.page</code> u jezgru.</li>
+            <li>Cleanup uvek, LIFO. Jezgro se ne forkuje — pin verzije.</li>
+          </ul>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Šta namerno ne nameće</p>
+          <h2>Njihov QA ostaje njihov</h2>
+          <ul>
+            <li>Playwright ostaje native — nema <code>qakit.click</code>.</li>
+            <li>POM, Cucumber, folderi, locatori — kod tima.</li>
+            <li>Više URL-ova — njihov <code>urls.ts</code>, ne jezgro.</li>
+            <li>Allure / Xray / dashboard — opciono, reporter paket.</li>
+            <li>Samo UI, samo API, ili oba.</li>
+          </ul>
+          <p class="muted">Namećeš šta je run i šta je pad. Ne namećeš kako se testira checkout.</p>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Paketi · Phase 1 + 2</p>
+          <h2>Šta postoji danas</h2>
+          <table>
+            <tr><th>Paket</th><th>Uloga</th></tr>
+            <tr><td><code>@qakit/contracts</code></td><td>Ugovor: tipovi, Zod, greške. Bez I/O.</td></tr>
+            <tr><td><code>@qakit/core</code></td><td>Runtime: config, context, kuke, log, artifacti, rezultati.</td></tr>
+            <tr><td><code>@qakit/playwright</code></td><td>Chromium + native <code>page</code>. Bez wrappera.</td></tr>
+            <tr><td><code>@qakit/api</code></td><td>Generički HTTP. Bez SAP klijenta.</td></tr>
+            <tr><td><code>@qakit/cli</code></td><td><code>qakit init</code> / <code>version</code> / <code>upgrade</code>.</td></tr>
+          </table>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Šta imaš u rukama</p>
+          <h2>Phase 1 i 2 = gotovo</h2>
+          <ul>
+            <li class="ok">Jezgro radi: config slojevi, execution context, lifecycle, logger, disk artifacti, summary.</li>
+            <li class="ok">UI i API adapteri na service registry.</li>
+            <li class="ok">CLI skeluje timski repo, pokazuje verzije, bump-uje pinove.</li>
+            <li class="ok">Changesets + GitLab npm publish (SixSentix).</li>
+            <li><code>reference-consumer</code> je maketa tima u tvom gitu.</li>
+          </ul>
+          <p class="muted">Sledeće nije “još feature u core-u”. Sledeće je Phase 3: prvi pravi tim.</p>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Tim · prvi dan</p>
+          <h2>Kako kreću</h2>
+          <pre>qakit init checkout-api
+cd checkout-api
+pnpm install
+qakit version</pre>
+          <p>Dobiju <code>package.json</code> sa pinovanim <code>@qakit/*</code>, <code>qakit.config.ts</code>, primer testa. Dalje pišu <strong>svoje</strong> scenarije u <strong>svom</strong> gitu.</p>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Config</p>
+          <h2>Mali objekat, ne čudovište</h2>
+          <pre>import { defineConfig } from '@qakit/core';
+
+export default defineConfig({
+  project: 'checkout-api',      // obavezno
+  environment: 'staging',       // opciono
+  baseUrl: 'https://shop…',     // jedan URL, opciono
+});</pre>
+          <p class="muted">Slojevi: defaulti → fajl → QAKIT_PROJECT / ENVIRONMENT / LOG_LEVEL → runtime. Više URL-ova = njihov kod.</p>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Kako se “pokrene framework”</p>
+          <h2>Njihov test ide kroz tvoj run</h2>
+          <p>QAKit nije magični hook na Windows. Run postoji jer kod zove core + adapter:</p>
+          <ul>
+            <li><code>loadConfig()</code> → <code>ExecutionContext</code> (ID, log, artifact store, prazna fioka).</li>
+            <li><code>registerPlaywright</code> / <code>registerApi</code> kače kuke.</li>
+            <li>Lifecycle: beforeExecution → beforeTest → <strong>njihov kod</strong> → after / cleanup (uvek).</li>
+            <li>Summary + artifacti. Reporteri kasnije slušaju to.</li>
+          </ul>
+          <p class="muted">Ako neko uvozi goli Playwright i zaobiđe ovaj ulaz — nije na šini. Init + dogovor + CI skripta drže ulaz.</p>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">UI</p>
+          <h2>Native Playwright</h2>
+          <pre>registerPlaywright(manager, { headless: true, screenshotOnFailure: true });
+await manager.runBeforeExecution(execution);
+const page = test.services.get(ServiceKeys.PlaywrightPage);
+await page.goto(url);
+await page.getByRole('button', { name: 'Login' }).click();</pre>
+          <p class="muted">Fioka drži <code>page</code>. Core ne uvozi Playwright. Zato Appium sutra ne lomi jezgro.</p>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">API</p>
+          <h2>Isti run, druga fioka</h2>
+          <pre>registerApi(manager, { saveArtifacts: true });
+const client = test.services.get(ServiceKeys.ApiClient);
+const res = await client.request({ method: 'GET', url: '/health' });</pre>
+          <p>4xx/5xx → <code>IntegrationError</code>. Timeout → <code>TimeoutError</code>. Auth headeri iz <code>AuthProvider</code> (njihov), ne iz jezgra.</p>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Gde šta živi</p>
+          <h2>Jedan run u slici</h2>
+          <pre>GitLab job (njihov repo)
+  pnpm test / njihov runner
+       → node_modules/@qakit/core     config + lifecycle
+       → @qakit/playwright | @qakit/api
+       → njihov tests/login.spec.ts
+       → artifacts/ + log + TestResult</pre>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Verzije</p>
+          <h2>Publish i upgrade</h2>
+          <ul>
+            <li>Interni GitLab npm, scope <code>@qakit</code>. Nije public npm.</li>
+            <li>Tim pinuje <code>"@qakit/core": "0.1.0"</code>.</li>
+            <li><code>qakit upgrade</code> bump-uje pinove; ne dira njihove testove.</li>
+            <li>Breaking javni API = major. Oni ostaju na staroj dok ne hoće.</li>
+          </ul>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Kasnije · nije sad</p>
+          <h2>Ista šina, novi vagoni</h2>
+          <div class="grid">
+            <div class="box"><h3>Kanali</h3><p>Appium, BrowserStack (hub, ne jezgro), DB, mail, Excel/PDF kao paketi ili Python worker.</p></div>
+            <div class="box"><h3>Report</h3><p>Allure/Xray reporter. Centralni dashboard = poseban servis + POST <code>ExecutionSummary</code>.</p></div>
+            <div class="box"><h3>Helperi</h3><p>Tabela na page-u → playwright paket ili tim. PDF/Excel → <code>@qakit/pdf</code>, ne core. Domain login → tim.</p></div>
+            <div class="box"><h3>Ne ovde</h3><p><code>if SAP</code>, obavezan Allure u jezgru, jedan git sa svim testovima sveta.</p></div>
+          </div>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Appium / BrowserStack (kad zatreba)</p>
+          <h2>Adapter + hub, ne core</h2>
+          <p><code>@qakit/appium</code> registruje driver u fioku, cleanup gasi session.</p>
+          <p>BrowserStack = isti adapter, drugi hostname i capabilities iz env (<code>BROWSERSTACK_*</code>).</p>
+          <p class="muted">Playwright + BS cloud browser je isti trik na <code>@qakit/playwright</code>. Nema <code>browserstackUser</code> u contracts.</p>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Šta ljudi dobijaju</p>
+          <h2>Use case u jednoj listi</h2>
+          <ul>
+            <li>Start: <code>qakit init</code>, ne dve nedelje frameworka.</li>
+            <li>Isti pad, isti artifact folder, isti error kod u svim timovima.</li>
+            <li>UI i API na jednoj šini.</li>
+            <li>CI: <code>QAKIT_ENVIRONMENT=staging</code> bez commit-a configa.</li>
+            <li>Upgrade kad oni odluče. Handover: isti oblik repo-a.</li>
+          </ul>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Phase 3</p>
+          <h2>Sledeće: prvi pravi tim</h2>
+          <ul>
+            <li>Njihov git, njihov tanak slice (jedan UI i/ili API tok).</li>
+            <li>Core se dira <strong>samo</strong> ako udare generičku rupu.</li>
+            <li>Nije feature dump (Allure, Appium, dashboard, POM lib).</li>
+          </ul>
+        `
+      },
+      {
+        html: `
+          <p class="kicker">Poruka</p>
+          <h2>Jedna rečenica</h2>
+          <p style="font-size:1.6rem;max-width:40rem">QAKit nameće kako se run desi. Timovi nameću šta se testira.</p>
+          <p class="muted" style="margin-top:2rem">Phase 1 + 2 su šina i stanica za ukrcavanje (CLI + registry). Phase 3 je prvi voz.</p>
+        `
+      }
+    ];
+
+    const deck = document.getElementById('deck');
+    slides.forEach((s, i) => {
+      const el = document.createElement('section');
+      el.className = 'slide' + (i === 0 ? ' on' : '');
+      el.innerHTML = s.html;
+      deck.appendChild(el);
+    });
+    document.getElementById('total').textContent = String(slides.length);
+    let i = 0;
+    const show = (n) => {
+      const all = document.querySelectorAll('.slide');
+      i = Math.max(0, Math.min(all.length - 1, n));
+      all.forEach((el, k) => el.classList.toggle('on', k === i));
+      document.getElementById('pos').textContent = String(i + 1);
+    };
+    document.addEventListener('keydown', (e) => {
+      if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+      if (e.key === 'Home') show(0);
+      if (e.key === 'End') show(slides.length - 1);
+    });
+  </script>
+</body>
+</html>
