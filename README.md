@@ -154,6 +154,39 @@ pnpm version-packages
 
 Then run the GitLab **publish** job on the default branch.
 
+## Install from GitHub (personal playground)
+
+GitHub Packages cannot host `@qakit/*` under account `Ianmoone14` (scope must match the owner). The playground therefore ships `@qakit/*` tarballs on a GitHub Release. No PAT. Tests still import `@qakit/*`.
+
+1. From this repo: `pnpm github-release` (uploads `playground-0.1.0`).
+2. Copy `examples/github-playground` **outside** this repo, or start a new folder with:
+
+```json
+{
+  "name": "checkout-pilot",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@qakit/core": "https://github.com/Ianmoone14/qakit/releases/download/playground-0.1.0/qakit-core-0.1.0.tgz",
+    "@qakit/playwright": "https://github.com/Ianmoone14/qakit/releases/download/playground-0.1.0/qakit-playwright-0.1.0.tgz",
+    "@qakit/api": "https://github.com/Ianmoone14/qakit/releases/download/playground-0.1.0/qakit-api-0.1.0.tgz",
+    "@qakit/cli": "https://github.com/Ianmoone14/qakit/releases/download/playground-0.1.0/qakit-cli-0.1.0.tgz",
+    "playwright": "^1.47.0"
+  }
+}
+```
+
+```bash
+pnpm install
+pnpm exec qakit version
+pnpm exec playwright install chromium
+pnpm test
+```
+
+Do not run `qakit init` here — it would pin `@qakit/…@0.1.0` from public npm, which does not exist. Company GitLab still publishes real `@qakit` names.
+
+GitHub Packages (`pnpm github-publish`, workflow **Publish GitHub Packages**) is optional and needs a classic PAT with `write:packages`. The `gh` login token does not have that scope.
+
 ## Layout
 
 ```
@@ -163,6 +196,7 @@ packages/playwright/  # native Playwright extension
 packages/api/         # generic HTTP client
 packages/cli/         # qakit init / version / upgrade
 reference-consumer/   # example consumer
+examples/github-playground/  # personal GitHub Packages starter
 .changeset/           # versioning
 .gitlab-ci.yml        # test + publish
 .github/workflows/    # CI while the repo is still on GitHub

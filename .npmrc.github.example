@@ -1,0 +1,6 @@
+# Personal GitHub Packages (Ianmoone14). Not the SixSentix GitLab registry.
+# GitHub requires the npm scope to match the account, so packages are published as
+# @ianmoone14/qakit-* and aliased back to @qakit/* in the team project.
+
+@ianmoone14:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
