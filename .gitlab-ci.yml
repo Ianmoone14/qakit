@@ -1,4 +1,5 @@
-image: node:20
+# Changesets 3 requires Node 22 (module.enableCompileCache).
+image: node:22
 
 stages:
   - test
