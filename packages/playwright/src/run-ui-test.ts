@@ -91,13 +91,19 @@ async function registerOptionalApi(
   }
 }
 
-function playwrightOptions(options: RunUiTestOptions | undefined): PlaywrightExtensionOptions {
-  const resolved: PlaywrightExtensionOptions = { headless: options?.headless !== false };
-  if (options?.screenshotOnFailure === true) {
-    resolved.screenshotOnFailure = true;
+function playwrightOverrides(options: RunUiTestOptions | undefined): PlaywrightExtensionOptions {
+  const resolved: PlaywrightExtensionOptions = {};
+  if (options?.headless !== undefined) {
+    resolved.headless = options.headless;
   }
-  if (options?.traceOnFailure === true) {
-    resolved.traceOnFailure = true;
+  if (options?.screenshotOnFailure !== undefined) {
+    resolved.screenshotOnFailure = options.screenshotOnFailure;
+  }
+  if (options?.traceOnFailure !== undefined) {
+    resolved.traceOnFailure = options.traceOnFailure;
+  }
+  if (options?.cwd !== undefined) {
+    resolved.cwd = options.cwd;
   }
   return resolved;
 }
@@ -152,7 +158,7 @@ export async function runUiTest<TApi = UiApiClient>(
   options?: RunUiTestOptions,
 ): Promise<ExecutionSummary> {
   const runOptions = toRunOptions(name, options, async (manager, config) => {
-    registerPlaywright(manager, playwrightOptions(options));
+    registerPlaywright(manager, playwrightOverrides(options));
     await registerOptionalApi(manager, options?.api);
     if (options?.register !== undefined) {
       await options.register(manager, config);

@@ -1,6 +1,6 @@
 # Architecture
 
-Rules for anyone changing QAKit. Plan and hours: [plan.xlsx](plan.xlsx).
+Rules for anyone changing QAKit. A team starting from an empty folder: [team-start.md](team-start.md). Writing a test: [first-test.md](first-test.md). Plan and hours: [plan.xlsx](plan.xlsx).
 
 ## Boundaries
 
@@ -34,7 +34,9 @@ Public API: `defineConfig`, `loadConfig`, `resolveConfig`, `validateConfig`.
 
 Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `QAKIT_PROJECT` / `QAKIT_ENVIRONMENT` / `QAKIT_LOG_LEVEL` → runtime overrides. Validate the merged object (`ConfigurationError` with a stable `code`).
 
-`loadConfig` reads `qakit.config.ts` from `cwd` or an explicit `path`.
+`loadConfig` reads `qakit.config.ts` from `cwd` or an explicit `path`. `retry` is stored and not applied yet. `Reporter` exists on the contract and is not invoked yet.
+
+Playwright launch defaults are **not** in this file. They live in `qakit.playwright.json` and are read by `@qakit/playwright`.
 
 ## Execution context (runtime in `@qakit/core`)
 
@@ -72,7 +74,7 @@ Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `
 
 ## Playwright (`@qakit/playwright`)
 
-`registerPlaywright` launches Chromium, registers `ServiceKeys.PlaywrightBrowser` / `Context` / `Page`, and closes them in `testCleanup` / `cleanup` (LIFO). Teams use native `page.goto` and locators. Optional `screenshotOnFailure` / `traceOnFailure` write files then `ArtifactStore.save`. Browsers are not downloaded on install — run `pnpm --filter @qakit/playwright exec playwright install chromium`.
+`registerPlaywright` launches Chromium, registers `ServiceKeys.PlaywrightBrowser` / `Context` / `Page`, and closes them in `testCleanup` / `cleanup` (LIFO). Teams use native `page.goto` and locators. Optional `screenshotOnFailure` / `traceOnFailure` write files then `ArtifactStore.save`. Team defaults: `qakit.playwright.json` in the consumer cwd (`headless`, `screenshotOnFailure`, `traceOnFailure`). Explicit `registerPlaywright` / `runUiTest` options override that file. Core never reads it. Browsers are not downloaded on install — run `pnpm --filter @qakit/playwright exec playwright install chromium` (or `pnpm exec playwright install chromium` in the team repo).
 
 ## API (`@qakit/api`)
 
@@ -80,11 +82,20 @@ Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `
 
 ## CLI (`@qakit/cli`)
 
-Binary name is `qakit` (not `qa`). `qakit init <name>` writes a consumer folder (`package.json` with pinned `@qakit/core` / playwright / api, `qakit.config.ts`, config smoke test, `uiTest` / `apiTest` samples, gitignore). Non-empty directories require `--force`. `qakit version` prints the CLI version plus `@qakit/*` packages resolved from the current project. `qakit upgrade` rewrites only those pins in `package.json` to the running CLI’s platform version (patch/minor by default, `--major` for a major). It does not touch team tests or run install.
+Binary name is `qakit` (not `qa`). `qakit init <name>` writes a consumer folder. `--playwright` / `--api` choose adapters (neither flag = both). Core is always pinned. Playwright also writes `qakit.playwright.json` (read by `@qakit/playwright`, not core). Sample tests match the chosen adapters. Non-empty directories require `--force`. `qakit version` prints the CLI version plus `@qakit/*` packages resolved from the current project. `qakit upgrade` rewrites only those pins in `package.json` to the running CLI’s platform version (patch/minor by default, `--major` for a major). It does not touch team tests or run install.
 
-## Release
+## Release (Changesets)
 
-`pnpm changeset` records a user-facing change. After `pnpm version-packages` lands on the default branch, the GitLab **publish** job runs `changeset publish` to the project npm registry. Teams install `"@qakit/core": "x.y.z"` with `.npmrc` from `.npmrc.example` (GitLab token, not public npm).
+A **changeset** is a small markdown file in `.changeset/`. It is not a package and not a Git commit. It is a ticket that says: “next publish, bump these packages (major / minor / patch) and write this changelog line.”
+
+```bash
+pnpm changeset              # create a ticket after a user-facing change
+pnpm version-packages       # consume tickets: bump package.json versions, write CHANGELOG, delete the tickets
+```
+
+Then the GitLab **publish** job runs `changeset publish` to the SixSentix GitLab npm registry. Teams install `"@qakit/core": "x.y.z"` with `.npmrc` from `.npmrc.example`.
+
+Packages in `fixed` version together: one minor ticket bumps contracts, core, playwright, api, and cli to the same number. Until you run `version-packages`, `package.json` stays `0.1.0` even if the driver is already in git.
 
 ## Reference consumer
 

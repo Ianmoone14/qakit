@@ -1,8 +1,26 @@
 import type { PinnedQakitPackage } from './versions.js';
 
+export interface InitAdapters {
+  playwright: boolean;
+  api: boolean;
+}
+
 export interface TemplateInput {
   project: string;
   specs: Record<PinnedQakitPackage, string>;
+  adapters: InitAdapters;
+}
+
+export function renderPlaywrightSettings(): string {
+  return `${JSON.stringify(
+    {
+      headless: true,
+      screenshotOnFailure: false,
+      traceOnFailure: false,
+    },
+    null,
+    2,
+  )}\n`;
 }
 
 export function renderGitignore(): string {
@@ -29,9 +47,9 @@ export function renderPackageJson(input: TemplateInput): string {
       typecheck: 'tsc -p tsconfig.json --noEmit',
     },
     dependencies: {
-      '@qakit/api': input.specs['@qakit/api'],
       '@qakit/core': input.specs['@qakit/core'],
-      '@qakit/playwright': input.specs['@qakit/playwright'],
+      ...(input.adapters.api ? { '@qakit/api': input.specs['@qakit/api'] } : {}),
+      ...(input.adapters.playwright ? { '@qakit/playwright': input.specs['@qakit/playwright'] } : {}),
     },
     devDependencies: {
       '@types/node': '^26.4.0',

@@ -2,7 +2,9 @@
 
 Copy into Jira / GitLab / Azure Boards. One epic ≈ one delivery slice. Capacity is **8 hours per week**.
 
-**Status:** 1.0–2.4 done. Next epic: **3.1 First-team pilot**.
+**Status:** 1.0–2.5 done. Next: publish the pending Changesets as **0.2.0**, then **3.1 First-team pilot**.
+
+Tester path: [team-start.md](team-start.md) then [first-test.md](first-test.md). Do not pull Icebox items (Allure, Appium, POM) before a named team runs.
 
 Do not start Phase 2 until Phase 1.10 is done. Do not pull Icebox items into the current board.
 
@@ -29,6 +31,7 @@ Suggested Jira fields: Epic name, Description (goal + done when), child Tasks/St
 | 2.2 Release and publish | 2 | Done |
 | 2.3 Upgrade command | 2 | Done |
 | 2.4 Test driver | 2 | Done |
+| 2.5 Init adapters + first-test docs | 2 | Done |
 | 3.1 First-team pilot | 3 | Later |
 | Icebox | — | Not now |
 
@@ -254,6 +257,7 @@ Critical path: 1.2 → 1.3 → 1.4 → 1.5 → (1.6 in parallel with 1.7) → 1.
 - [x] Package `@qakit/cli` with `qakit` bin
 - [x] `qakit init <name>` — package.json, `qakit.config.ts`, sample test, gitignore
 - [x] Init pins current `@qakit/core` (and playwright/api when present)
+- [x] Later (2.5): `--playwright` / `--api` and `qakit.playwright.json`
 - [x] `qakit version` — reads installed package versions
 - [x] Tests — generated project typechecks; init is idempotent enough to not trash an existing repo without a flag
 
@@ -310,15 +314,34 @@ Critical path: 1.2 → 1.3 → 1.4 → 1.5 → (1.6 in parallel with 1.7) → 1.
 
 ---
 
+## Epic 2.5 — Init adapters and first-test docs
+
+**Status:** Done  
+**Depends on:** 2.1, 2.4  
+**Goal:** A team installs only the adapters they need; Playwright settings stay out of core config; testers have one linear first-run page.  
+**Done when:** `qakit init --playwright` / `--api` writes the matching deps and samples; Playwright reads `qakit.playwright.json`; [first-test.md](first-test.md) is the tester path.
+
+### Tasks (done)
+
+- [x] `--playwright` / `--api` (no flags = both; core always included)
+- [x] `qakit.playwright.json` written on Playwright init; `@qakit/playwright` loads it; test options override
+- [x] No Appium flag or JSON until `@qakit/appium` exists
+- [x] [first-test.md](first-test.md): init → `baseUrl` → `uiTest` / `apiTest` → `artifacts/` → print `ExecutionSummary`
+- [x] README / architecture point testers at that page
+
+---
+
 ## Epic 3.1 — First-team pilot
 
 **Status:** Later (Phase 3)  
-**Depends on:** Phase 1 complete; Phase 2 init/version/driver available  
+**Depends on:** Phase 2 complete; **0.2.0 published** to GitLab npm (driver + init adapters are still `0.1.0` in package.json until Changesets run)  
 **Goal:** One real team runs on QAKit. Add core code only if they hit a real hole.  
-**Done when:** That team’s CI runs their tests against published (or agreed) QAKit packages; their domain code stays in their repo.
+**Done when:** That team’s CI runs their tests against published QAKit packages; their domain code stays in their repo.
 
 ### Tasks
 
+- [ ] `pnpm version-packages` + GitLab publish → 0.2.0 (consume pending `.changeset/` tickets)
+- [ ] First user (or named team) in a folder **outside** this monorepo: [team-start.md](team-start.md)
 - [ ] Pick the first team and a thin slice (one UI flow and/or one API flow)
 - [ ] Kickoff: what stays in their repo vs what is platform
 - [ ] Their `qakit.config.ts`, CI job, artifacts path
@@ -338,8 +361,11 @@ Create these epics only when a pilot asks for them. Not Phase 1.
 | Python workers (Excel/CSV/ERP) | Not a second Playwright framework; after core is used |
 | DB adapters | Contract + per-DB work; not needed to run UI/API |
 | Mocks / service virtualisation | Easy to overbuild before a real team needs it |
-| Allure reporter | Reporter interface exists; vendor adapter is optional |
+| Allure reporter | Reporter interface exists; nobody calls it yet |
 | Xray reporter | Same; must not leak Xray fields into core results |
+| Appium + `qakit.appium.json` | Same pattern as Playwright JSON; needs `@qakit/appium` first |
+| `retry` actually retries | Config field is stored only |
+| Shared browser for a file | One `uiTest` = one browser launch today |
 | Central reporting dashboard | Separate product (~350h), not a core feature |
 | Page-object library | After 3+ teams share real patterns; not a guess |
 

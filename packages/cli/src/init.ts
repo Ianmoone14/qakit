@@ -8,10 +8,12 @@ import {
   renderExampleTest,
   renderGitignore,
   renderPackageJson,
+  renderPlaywrightSettings,
   renderQakitConfig,
   renderTsconfig,
   renderUiExampleTest,
   renderVitestConfig,
+  type InitAdapters,
 } from './templates.js';
 import { readPinnedQakitVersions, type PinnedQakitPackage } from './versions.js';
 
@@ -19,6 +21,8 @@ export interface InitOptions {
   name: string;
   cwd: string;
   force?: boolean;
+  playwright?: boolean;
+  api?: boolean;
   /** Absolute path to `packages/` for `file:` specs (tests / local platform work). */
   linkPackagesDir?: string;
 }
@@ -75,19 +79,35 @@ export function initProject(options: InitOptions): { dir: string; files: string[
   mkdirSync(dir, { recursive: true });
   mkdirSync(path.join(dir, 'src'), { recursive: true });
 
+  const adapters: InitAdapters = {
+    playwright: options.playwright !== false,
+    api: options.api !== false,
+  };
+  if (!adapters.playwright && !adapters.api) {
+    throw new CliError(
+      'Select at least one adapter: --playwright and/or --api. Appium is not available yet.',
+      'INIT_ADAPTERS_MISSING',
+    );
+  }
+
   const versions = readPinnedQakitVersions();
   const specs = resolveSpecs(versions, options.linkPackagesDir);
   const files: Array<{ relative: string; contents: string }> = [
-    { relative: 'package.json', contents: renderPackageJson({ project: name, specs }) },
+    { relative: 'package.json', contents: renderPackageJson({ project: name, specs, adapters }) },
     { relative: 'qakit.config.ts', contents: renderQakitConfig(name) },
     { relative: 'tsconfig.json', contents: renderTsconfig() },
     { relative: 'vitest.config.ts', contents: renderVitestConfig() },
     { relative: '.gitignore', contents: renderGitignore() },
     { relative: 'src/example.ts', contents: renderExampleSrc() },
     { relative: 'src/example.test.ts', contents: renderExampleTest(name) },
-    { relative: 'src/ui.example.test.ts', contents: renderUiExampleTest() },
-    { relative: 'src/api.example.test.ts', contents: renderApiExampleTest() },
   ];
+  if (adapters.playwright) {
+    files.push({ relative: 'qakit.playwright.json', contents: renderPlaywrightSettings() });
+    files.push({ relative: 'src/ui.example.test.ts', contents: renderUiExampleTest() });
+  }
+  if (adapters.api) {
+    files.push({ relative: 'src/api.example.test.ts', contents: renderApiExampleTest() });
+  }
 
   for (const file of files) {
     writeFileSync(path.join(dir, file.relative), file.contents, 'utf8');

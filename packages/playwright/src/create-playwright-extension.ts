@@ -12,11 +12,15 @@ import {
 } from '@qakit/core';
 import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
 import { PLAYWRIGHT_PACKAGE, PLAYWRIGHT_VERSION } from './package-info.js';
+import {
+  loadPlaywrightFileConfig,
+  resolvePlaywrightOptions,
+  type PlaywrightFileConfig,
+} from './playwright-settings.js';
 
-export interface PlaywrightExtensionOptions {
-  headless?: boolean;
-  screenshotOnFailure?: boolean;
-  traceOnFailure?: boolean;
+export interface PlaywrightExtensionOptions extends PlaywrightFileConfig {
+  /** Directory that contains `qakit.playwright.json`. Default: `process.cwd()`. */
+  cwd?: string;
 }
 
 const HOOK_TIMEOUTS: Partial<Record<LifecyclePhase, LifecycleHookOptions>> = {
@@ -146,5 +150,17 @@ export function registerPlaywright(
   manager: LifecycleManager,
   options?: PlaywrightExtensionOptions,
 ): void {
-  manager.registerExtension(createPlaywrightExtension(options), HOOK_TIMEOUTS);
+  const cwd = options?.cwd ?? process.cwd();
+  const overrides: PlaywrightFileConfig = {};
+  if (options?.headless !== undefined) {
+    overrides.headless = options.headless;
+  }
+  if (options?.screenshotOnFailure !== undefined) {
+    overrides.screenshotOnFailure = options.screenshotOnFailure;
+  }
+  if (options?.traceOnFailure !== undefined) {
+    overrides.traceOnFailure = options.traceOnFailure;
+  }
+  const resolved = resolvePlaywrightOptions(loadPlaywrightFileConfig(cwd), overrides);
+  manager.registerExtension(createPlaywrightExtension(resolved), HOOK_TIMEOUTS);
 }

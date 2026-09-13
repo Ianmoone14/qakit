@@ -8,6 +8,8 @@ export interface ParsedArgs {
   force: boolean;
   major: boolean;
   dryRun: boolean;
+  playwright: boolean;
+  api: boolean;
   name?: string;
   linkPackagesDir?: string;
 }
@@ -17,6 +19,8 @@ export function parseArgs(argv: readonly string[], cwd = process.cwd()): ParsedA
   let force = false;
   let major = false;
   let dryRun = false;
+  let playwrightFlag = false;
+  let apiFlag = false;
   let cwdOpt: string | undefined;
   let linkPackagesDir: string | undefined;
   const positional: string[] = [];
@@ -27,10 +31,10 @@ export function parseArgs(argv: readonly string[], cwd = process.cwd()): ParsedA
       break;
     }
     if (next === '--help' || next === '-h') {
-      return { command: 'help', cwd: cwdOpt ?? cwd, force, major, dryRun };
+      return { command: 'help', cwd: cwdOpt ?? cwd, force, major, dryRun, playwright: true, api: true };
     }
     if (next === '--version' || next === '-v') {
-      return { command: 'version', cwd: cwdOpt ?? cwd, force, major, dryRun };
+      return { command: 'version', cwd: cwdOpt ?? cwd, force, major, dryRun, playwright: true, api: true };
     }
     if (next === '--force') {
       force = true;
@@ -42,6 +46,14 @@ export function parseArgs(argv: readonly string[], cwd = process.cwd()): ParsedA
     }
     if (next === '--dry-run') {
       dryRun = true;
+      continue;
+    }
+    if (next === '--playwright') {
+      playwrightFlag = true;
+      continue;
+    }
+    if (next === '--api') {
+      apiFlag = true;
       continue;
     }
     if (next === '--cwd') {
@@ -68,7 +80,16 @@ export function parseArgs(argv: readonly string[], cwd = process.cwd()): ParsedA
 
   const commandToken = positional[0];
   const resolvedCwd = cwdOpt ?? cwd;
-  const base: ParsedArgs = { command: 'help', cwd: resolvedCwd, force, major, dryRun };
+  const anyAdapter = playwrightFlag || apiFlag;
+  const base: ParsedArgs = {
+    command: 'help',
+    cwd: resolvedCwd,
+    force,
+    major,
+    dryRun,
+    playwright: anyAdapter ? playwrightFlag : true,
+    api: anyAdapter ? apiFlag : true,
+  };
 
   if (commandToken === undefined || commandToken === 'help') {
     return base;
@@ -95,12 +116,15 @@ export function parseArgs(argv: readonly string[], cwd = process.cwd()): ParsedA
 }
 
 export const HELP_TEXT = `Usage:
-  qakit init <name> [--force] [--cwd <dir>]
+  qakit init <name> [--playwright] [--api] [--force] [--cwd <dir>]
   qakit version
   qakit upgrade [--major] [--dry-run] [--cwd <dir>]
   qakit --help
 
-init scaffolds a consumer project (package.json, qakit.config.ts, sample test).
+init scaffolds a consumer project. With no adapter flags, both Playwright and API are included.
+  --playwright  add @qakit/playwright, ui example, and qakit.playwright.json
+  --api         add @qakit/api and an api example
+  Passing either flag installs only the adapters you list (core is always included).
 version prints installed @qakit package versions.
 upgrade bumps pinned @qakit/* versions in package.json (not tests). Use --major for a major bump.
 `;

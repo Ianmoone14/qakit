@@ -48,6 +48,8 @@ export async function runCli(argv: readonly string[], io: RunCliIo = {}): Promis
     const initOptions = {
       name,
       cwd: args.cwd,
+      playwright: args.playwright,
+      api: args.api,
       ...(args.force ? { force: true } : {}),
       ...(args.linkPackagesDir !== undefined ? { linkPackagesDir: args.linkPackagesDir } : {}),
     };

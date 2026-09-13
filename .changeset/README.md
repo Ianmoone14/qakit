@@ -1,12 +1,25 @@
 # Changesets
 
-Platform packages version together. Add a changeset for every user-facing change:
+A changeset is a short markdown **ticket** in this folder. It is not a release.
+
+After a user-facing change, add one:
 
 ```bash
 pnpm changeset
 ```
 
+The file says: bump these `@qakit/*` packages (major / minor / patch) and use this sentence in the changelog.
+
+`fixed` in `config.json` means all publishable packages share one version. One minor ticket → everyone goes `0.1.0` → `0.2.0`.
+
+To actually cut the version (does not publish):
+
+```bash
+pnpm version-packages
+```
+
+That rewrites `package.json` versions, writes `CHANGELOG.md`, and deletes the consumed tickets. Commit that result. GitLab **publish** then runs `changeset publish` to the SixSentix GitLab npm registry.
+
 Semver: public API break = major; new optional API = minor; fix = patch.
 
-After merge, run `pnpm version-packages` and land that commit, then run the GitLab **publish** job. That publishes `@qakit/*` to the SixSentix GitLab npm registry.
-
+Pending tickets now are for the **test driver**, **init adapter flags**, and **`qakit.playwright.json`**. Until `version-packages` runs, installs of `0.1.0` do not include those APIs.

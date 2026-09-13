@@ -41,6 +41,14 @@ describe('parseArgs', () => {
     expect(parsed.command).toBe('init');
     expect(parsed.name).toBe('checkout-api');
     expect(parsed.force).toBe(true);
+    expect(parsed.playwright).toBe(true);
+    expect(parsed.api).toBe(true);
+  });
+
+  it('treats a single adapter flag as opt-in', () => {
+    const parsed = parseArgs(['init', 'checkout-api', '--api'], '/tmp');
+    expect(parsed.playwright).toBe(false);
+    expect(parsed.api).toBe(true);
   });
 
   it('treats --version as version', () => {
@@ -76,6 +84,25 @@ describe('qakit init', () => {
     expect(await readFile(path.join(result.dir, 'src/api.example.test.ts'), 'utf8')).toContain(
       "from '@qakit/api/test'",
     );
+    expect(result.files).toContain('qakit.playwright.json');
+    expect(await readFile(path.join(result.dir, 'qakit.playwright.json'), 'utf8')).toContain(
+      '"headless": true',
+    );
+  });
+
+  it('installs only the API adapter when --api is passed', async () => {
+    const cwd = await mkdtemp(path.join(tmpdir(), 'qakit-cli-'));
+    dirs.push(cwd);
+    const result = initProject({ name: 'checkout-api', cwd, playwright: false, api: true });
+    const pkg = JSON.parse(await readFile(path.join(result.dir, 'package.json'), 'utf8')) as {
+      dependencies: Record<string, string>;
+    };
+    expect(pkg.dependencies['@qakit/core']).toBe('0.1.0');
+    expect(pkg.dependencies['@qakit/api']).toBe('0.1.0');
+    expect(pkg.dependencies['@qakit/playwright']).toBeUndefined();
+    expect(result.files).not.toContain('qakit.playwright.json');
+    expect(result.files).not.toContain('src/ui.example.test.ts');
+    expect(result.files).toContain('src/api.example.test.ts');
   });
 
   it('refuses a non-empty directory without --force', async () => {
