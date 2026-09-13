@@ -12,6 +12,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./test": {
+      "types": "./dist/test.d.ts",
+      "import": "./dist/test.js"
+    },
     "./package.json": "./package.json"
   },
   "files": ["dist"],
@@ -23,6 +27,14 @@
   },
   "dependencies": {
     "@qakit/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "vitest": "^1.6.0"
+  },
+  "peerDependenciesMeta": {
+    "vitest": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^26.4.0",

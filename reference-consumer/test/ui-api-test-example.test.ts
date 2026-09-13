@@ -5,9 +5,11 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
-import { runApiSmoke } from './run-api.js';
+import { isChromiumInstalled } from '@qakit/playwright';
+import { runUiApiTestExample } from '../src/run-ui-api-test-example.js';
 
-const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+const consumerRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+const describeBrowser = isChromiumInstalled() ? describe : describe.skip;
 
 async function startPingServer(): Promise<{ url: string; close: () => Promise<void> }> {
   const server = createServer((_req, res) => {
@@ -35,7 +37,7 @@ async function startPingServer(): Promise<{ url: string; close: () => Promise<vo
   };
 }
 
-describe('api', () => {
+describeBrowser('reference-consumer runUiTest + API', () => {
   const dirs: string[] = [];
 
   afterEach(async () => {
@@ -43,15 +45,24 @@ describe('api', () => {
     dirs.length = 0;
   });
 
-  it('GETs /ping through ServiceKeys.ApiClient', async () => {
-    const outputDir = await mkdtemp(path.join(tmpdir(), 'qakit-play-api-'));
-    dirs.push(outputDir);
-    const server = await startPingServer();
-    try {
-      const summary = await runApiSmoke(root, outputDir, server.url);
-      expect(summary.status).toBe('passed');
-    } finally {
-      await server.close();
-    }
-  });
+  it(
+    'seeds via API then opens a page on the same run',
+    async () => {
+      const outputDir = await mkdtemp(path.join(tmpdir(), 'qakit-consumer-ui-api-'));
+      dirs.push(outputDir);
+      const server = await startPingServer();
+      try {
+        const summary = await runUiApiTestExample({
+          cwd: consumerRoot,
+          outputDir,
+          baseUrl: server.url,
+        });
+        expect(summary.status).toBe('passed');
+        expect(summary.results[0]?.testName).toBe('opens blank after ping');
+      } finally {
+        await server.close();
+      }
+    },
+    90_000,
+  );
 });

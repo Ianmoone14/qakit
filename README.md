@@ -4,12 +4,12 @@ Internal TypeScript QA platform. Small core, consumed by independent teams. Play
 
 ## Status
 
-Phase 1 is complete. CLI init, version, upgrade, and the publish pipeline are in place. Next: first-team pilot.
+Phase 1–2 are complete, including the test driver (`runQakitTest` / `uiTest` / `apiTest`). Next: first-team pilot.
 
 - `@qakit/contracts` — types, Zod schemas, error classes
-- `@qakit/core` — config, context, lifecycle, logging, artifacts, results
-- `@qakit/playwright` — native Playwright on the service registry (no action wrappers)
-- `@qakit/api` — generic HTTP client on the service registry (no domain clients)
+- `@qakit/core` — config, context, lifecycle, logging, artifacts, results, `runQakitTest`
+- `@qakit/playwright` — native Playwright + `runUiTest` / `uiTest` (no action wrappers)
+- `@qakit/api` — generic HTTP client + `runApiTest` / `apiTest` (no domain clients)
 - `@qakit/cli` — `qakit init`, `qakit version`, `qakit upgrade`
 - `reference-consumer` — example team project (public imports only)
 
@@ -42,7 +42,7 @@ Teams must import package names (`@qakit/core`), never `packages/*/src` internal
 
 ## Consume
 
-A team repo looks like `reference-consumer/`: `qakit.config.ts`, tests that import `@qakit/core` (and `@qakit/playwright` / `@qakit/api` as needed).
+A team repo looks like `reference-consumer/`: `qakit.config.ts`, tests that import `@qakit/playwright/test` or `@qakit/api/test` (or the long lifecycle if you need it).
 
 `qakit.config.ts`:
 
@@ -57,65 +57,48 @@ export default defineConfig({
 
 `project` is required and must be lowercase kebab-case.
 
-A run without a browser:
+### Tests (driver)
+
+Vitest wrap — no `ExecutionSummary` in the callback:
 
 ```ts
-import {
-  loadConfig,
-  createLoggerFromConfig,
-  FileSystemArtifactStore,
-  createExecutionContext,
-  createTestContext,
-  LifecycleManager,
-  createTestResult,
-  createExecutionSummary,
-} from '@qakit/core';
+import { uiTest } from '@qakit/playwright/test';
+import { apiTest } from '@qakit/api/test';
 
-const config = await loadConfig(); // defaults → file → QAKIT_* → overrides
-const logger = createLoggerFromConfig(config);
-const store = new FileSystemArtifactStore({ outputDir: config.artifacts.outputDir });
-const execution = createExecutionContext({ config, logger, artifacts: store });
-
-const manager = new LifecycleManager();
-manager.registerExtensions(config.extensions);
-
-const test = createTestContext(execution, {
-  testId: 't1',
-  testName: 'example',
-  testFile: 'example.test.ts',
+uiTest('home loads', async ({ page }) => {
+  await page.goto('https://example.com');
 });
 
-await manager.runBeforeTest(test);
-const result = createTestResult({ ctx: test, status: 'passed', duration: 1, store });
-const summary = createExecutionSummary({ ctx: execution, results: [result] });
+apiTest('health', async ({ api }) => {
+  const response = await api.request({ method: 'GET', url: '/health' });
+});
+
+uiTest('checkout after seed', async ({ page, api }) => {
+  await api?.request({ method: 'POST', url: '/setup', body: '{"cart":"demo"}' });
+  await page.goto('https://example.com/checkout');
+});
 ```
+
+Print the summary — use `runUiTest` / `runApiTest` (same run, no Vitest wrap):
+
+```ts
+import { it, expect } from 'vitest';
+import { runUiTest } from '@qakit/playwright';
+
+it('home loads', async () => {
+  const summary = await runUiTest('home loads', async ({ page }) => {
+    await page.goto('https://example.com');
+  });
+  console.log(JSON.stringify(summary, null, 2));
+  expect(summary.status).toBe('passed');
+});
+```
+
+There is no HTML report. Failed UI runs can write screenshot/trace into `artifacts/` when those options are on. Request/response files need `saveArtifacts: true`.
+
+Full lifecycle without the driver is still valid: `reference-consumer/src/run-playwright-example.ts` and `run-api-example.ts`.
 
 Invalid config throws `ConfigurationError` with a stable `code`. Native throws become `ExecutionError` via `wrapError`; existing `QakitError`s pass through.
-
-UI (native Playwright — no wrappers):
-
-```ts
-import { ServiceKeys } from '@qakit/core';
-import { registerPlaywright, type Page } from '@qakit/playwright';
-
-registerPlaywright(manager, { headless: true, screenshotOnFailure: true });
-await manager.runBeforeExecution(execution);
-await manager.runBeforeTest(test);
-const page = test.services.get<Page>(ServiceKeys.PlaywrightPage);
-await page.goto('about:blank');
-```
-
-HTTP (generic client — no domain wrappers):
-
-```ts
-import { ServiceKeys } from '@qakit/core';
-import { registerApi, type ApiClient } from '@qakit/api';
-
-registerApi(manager, { saveArtifacts: true });
-await manager.runBeforeTest(test);
-const client = test.services.get<ApiClient>(ServiceKeys.ApiClient);
-const response = await client.request({ method: 'GET', url: '/health' });
-```
 
 Scaffold a new team repo:
 
@@ -154,39 +137,6 @@ pnpm version-packages
 
 Then run the GitLab **publish** job on the default branch.
 
-## Install from GitHub (personal playground)
-
-GitHub Packages cannot host `@qakit/*` under account `Ianmoone14` (scope must match the owner). The playground therefore ships `@qakit/*` tarballs on a GitHub Release. No PAT. Tests still import `@qakit/*`.
-
-1. From this repo: `pnpm github-release` (uploads `playground-0.1.0`).
-2. Copy `examples/github-playground` **outside** this repo, or start a new folder with:
-
-```json
-{
-  "name": "checkout-pilot",
-  "private": true,
-  "type": "module",
-  "dependencies": {
-    "@qakit/core": "https://github.com/Ianmoone14/qakit/releases/download/playground-0.1.0/qakit-core-0.1.0.tgz",
-    "@qakit/playwright": "https://github.com/Ianmoone14/qakit/releases/download/playground-0.1.0/qakit-playwright-0.1.0.tgz",
-    "@qakit/api": "https://github.com/Ianmoone14/qakit/releases/download/playground-0.1.0/qakit-api-0.1.0.tgz",
-    "@qakit/cli": "https://github.com/Ianmoone14/qakit/releases/download/playground-0.1.0/qakit-cli-0.1.0.tgz",
-    "playwright": "^1.47.0"
-  }
-}
-```
-
-```bash
-pnpm install
-pnpm exec qakit version
-pnpm exec playwright install chromium
-pnpm test
-```
-
-Do not run `qakit init` here — it would pin `@qakit/…@0.1.0` from public npm, which does not exist. Company GitLab still publishes real `@qakit` names.
-
-GitHub Packages (`pnpm github-publish`, workflow **Publish GitHub Packages**) is optional and needs a classic PAT with `write:packages`. The `gh` login token does not have that scope.
-
 ## Layout
 
 ```
@@ -196,7 +146,6 @@ packages/playwright/  # native Playwright extension
 packages/api/         # generic HTTP client
 packages/cli/         # qakit init / version / upgrade
 reference-consumer/   # example consumer
-examples/github-playground/  # personal GitHub Packages starter
 .changeset/           # versioning
 .gitlab-ci.yml        # test + publish
 .github/workflows/    # CI while the repo is still on GitHub

@@ -12,6 +12,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./test": {
+      "types": "./dist/test.d.ts",
+      "import": "./dist/test.js"
+    },
     "./package.json": "./package.json"
   },
   "files": ["dist"],
@@ -25,7 +29,20 @@
     "@qakit/core": "workspace:*",
     "playwright": "^1.47.0"
   },
+  "peerDependencies": {
+    "@qakit/api": "workspace:*",
+    "vitest": "^1.6.0"
+  },
+  "peerDependenciesMeta": {
+    "@qakit/api": {
+      "optional": true
+    },
+    "vitest": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@qakit/api": "workspace:*",
     "@types/node": "^26.4.0",
     "typescript": "^5.4.0",
     "vitest": "^1.6.0"

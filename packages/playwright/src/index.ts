@@ -5,5 +5,12 @@ export {
   registerPlaywright,
 } from './create-playwright-extension.js';
 export type { PlaywrightExtensionOptions } from './create-playwright-extension.js';
+export { runUiTest } from './run-ui-test.js';
+export type {
+  RunUiTestOptions,
+  UiApiClient,
+  UiTestApiOption,
+  UiTestFixtures,
+} from './run-ui-test.js';
 
 export type { Browser, BrowserContext, Page } from 'playwright';

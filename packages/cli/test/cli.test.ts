@@ -68,6 +68,14 @@ describe('qakit init', () => {
     expect(pkg.dependencies['@qakit/api']).toBe('0.1.0');
     expect(await readFile(path.join(result.dir, 'qakit.config.ts'), 'utf8')).toContain("project: 'checkout-api'");
     expect(result.files).toContain('src/example.test.ts');
+    expect(result.files).toContain('src/ui.example.test.ts');
+    expect(result.files).toContain('src/api.example.test.ts');
+    expect(await readFile(path.join(result.dir, 'src/ui.example.test.ts'), 'utf8')).toContain(
+      "from '@qakit/playwright/test'",
+    );
+    expect(await readFile(path.join(result.dir, 'src/api.example.test.ts'), 'utf8')).toContain(
+      "from '@qakit/api/test'",
+    );
   });
 
   it('refuses a non-empty directory without --force', async () => {

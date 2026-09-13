@@ -21,6 +21,8 @@ export { FileSystemArtifactStore } from './artifacts/file-system-artifact-store.
 export type { FileSystemArtifactStoreOptions } from './artifacts/file-system-artifact-store.js';
 export { createExecutionSummary, createTestResult } from './results/create-result.js';
 export type { CreateExecutionSummaryOptions, CreateTestResultOptions } from './results/create-result.js';
+export { runQakitTest } from './run/run-qakit-test.js';
+export type { RunQakitTestOptions } from './run/run-qakit-test.js';
 
 export { createLogger, createLoggerFromConfig } from './logging/create-logger.js';
 export type { CreateLoggerOptions } from './logging/create-logger.js';

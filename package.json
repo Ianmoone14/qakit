@@ -8,9 +8,7 @@
     "clean": "turbo run clean",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "pnpm build && changeset publish",
-    "github-publish": "pnpm build && node scripts/publish-github-packages.mjs",
-    "github-release": "pnpm build && node scripts/publish-github-release.mjs"
+    "release": "pnpm build && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.2",

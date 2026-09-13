@@ -52,6 +52,24 @@ Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `
 
 `FileSystemArtifactStore` copies files into `artifacts.outputDir` and assigns `id` + `timestamp`. `createTestResult` attaches `store.getByTest` (or an explicit list). `createExecutionSummary` uses vendor-neutral statuses only; `timedOut` tests count as `failed` in `counts` and fail the run unless status is set to `cancelled`.
 
+## Driver (runtime in `@qakit/core`, helpers in adapters)
+
+`runQakitTest` is the only orchestration: one test = one execution, all six lifecycle phases, then `ExecutionSummary`. Core still has no Playwright or HTTP types. Adapters register in the `register` callback.
+
+| Helper | Package | Callback | Vitest wrap |
+| --- | --- | --- | --- |
+| `runQakitTest` | `@qakit/core` | `ctx` | none |
+| `runUiTest` | `@qakit/playwright` | `{ page, api?, ctx }` | none — returns summary |
+| `uiTest` | `@qakit/playwright/test` | same | `it()`; throws on failure |
+| `runApiTest` | `@qakit/api` | `{ api, ctx }` | none — returns summary |
+| `apiTest` | `@qakit/api/test` | same | `it()`; throws on failure |
+
+`uiTest` / `apiTest` import Vitest. `registerPlaywright` / `registerApi` do not — keep using those (or the long consumer examples) when you are not on Vitest.
+
+`api` on `runUiTest` is optional: registered when `@qakit/api` can be imported, unless `api: false`. Do not grow that fixtures object for Appium / DB / mocks — those are another `register` + `ServiceKeys` entry. Future `mobileTest({ driver })` is the same pattern.
+
+`ExecutionSummary` is created after the callback. Print it from the `runUiTest` / `runApiTest` return value, not inside `async ({ page }) => …`. There is no HTML report; `artifacts/` only gets files that adapters save (screenshot/trace on failure, request/response when enabled). `Reporter` is still not invoked automatically — Allure/Xray later attach to `afterTest` / `afterExecution`.
+
 ## Playwright (`@qakit/playwright`)
 
 `registerPlaywright` launches Chromium, registers `ServiceKeys.PlaywrightBrowser` / `Context` / `Page`, and closes them in `testCleanup` / `cleanup` (LIFO). Teams use native `page.goto` and locators. Optional `screenshotOnFailure` / `traceOnFailure` write files then `ArtifactStore.save`. Browsers are not downloaded on install — run `pnpm --filter @qakit/playwright exec playwright install chromium`.
@@ -62,7 +80,7 @@ Precedence, weakest to strongest: framework defaults → `qakit.config.ts` → `
 
 ## CLI (`@qakit/cli`)
 
-Binary name is `qakit` (not `qa`). `qakit init <name>` writes a consumer folder (`package.json` with pinned `@qakit/core` / playwright / api, `qakit.config.ts`, sample test, gitignore). Non-empty directories require `--force`. `qakit version` prints the CLI version plus `@qakit/*` packages resolved from the current project. `qakit upgrade` rewrites only those pins in `package.json` to the running CLI’s platform version (patch/minor by default, `--major` for a major). It does not touch team tests or run install.
+Binary name is `qakit` (not `qa`). `qakit init <name>` writes a consumer folder (`package.json` with pinned `@qakit/core` / playwright / api, `qakit.config.ts`, config smoke test, `uiTest` / `apiTest` samples, gitignore). Non-empty directories require `--force`. `qakit version` prints the CLI version plus `@qakit/*` packages resolved from the current project. `qakit upgrade` rewrites only those pins in `package.json` to the running CLI’s platform version (patch/minor by default, `--major` for a major). It does not touch team tests or run install.
 
 ## Release
 
@@ -70,7 +88,12 @@ Binary name is `qakit` (not `qa`). `qakit init <name>` writes a consumer folder 
 
 ## Reference consumer
 
-`reference-consumer` is the stand-in team: `qakit.config.ts` + `runExample` import `@qakit/core`. It loads config, runs hooks, writes a log and an artifact, and can fail with `CHECKOUT_FAILED`. UI example: `runPlaywrightExample` imports `@qakit/playwright` and calls native `page.goto`. API example: `runApiExample` imports `@qakit/api` and calls `client.request`.
+`reference-consumer` is the stand-in team: `qakit.config.ts` + `runExample` import `@qakit/core`. It loads config, runs hooks, writes a log and an artifact, and can fail with `CHECKOUT_FAILED`.
+
+Two UI/API styles are kept on purpose:
+
+- No driver: `runPlaywrightExample` / `runApiExample` — full `loadConfig` + `LifecycleManager` + `ServiceKeys`.
+- Driver: `runUiTestExample` / `runApiTestExample` / `runUiApiTestExample` — same run via `runUiTest` / `runApiTest`.
 
 ## TypeScript
 

@@ -4,3 +4,5 @@ export type { ApiClient, ApiClientOptions, HttpMethod, HttpRequest, HttpResponse
 export { HTTP_METHODS } from './create-api-client.js';
 export { createApiExtension, registerApi } from './create-api-extension.js';
 export type { ApiExtensionOptions } from './create-api-extension.js';
+export { runApiTest } from './run-api-test.js';
+export type { ApiTestFixtures, RunApiTestOptions } from './run-api-test.js';

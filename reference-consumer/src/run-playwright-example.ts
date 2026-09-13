@@ -1,3 +1,6 @@
+/**
+ * Full wiring without the driver. Prefer `runUiTest` / `uiTest` in new tests.
+ */
 import {
   FileSystemArtifactStore,
   LifecycleManager,

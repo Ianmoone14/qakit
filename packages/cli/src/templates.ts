@@ -120,3 +120,29 @@ describe('sample', () => {
 });
 `;
 }
+
+export function renderUiExampleTest(): string {
+  return `import { isChromiumInstalled } from '@qakit/playwright';
+import { uiTest } from '@qakit/playwright/test';
+import { describe } from 'vitest';
+
+const suite = isChromiumInstalled() ? describe : describe.skip;
+
+suite('ui example', () => {
+  uiTest('opens a blank page', async ({ page }) => {
+    await page.goto('about:blank');
+  });
+});
+`;
+}
+
+export function renderApiExampleTest(): string {
+  return `import { apiTest } from '@qakit/api/test';
+
+apiTest('registers an API client', async ({ api }) => {
+  if (typeof api.request !== 'function') {
+    throw new Error('api client missing request');
+  }
+});
+`;
+}

@@ -1,3 +1,6 @@
+/**
+ * Full wiring without the driver. Prefer `runApiTest` / `apiTest` in new tests.
+ */
 import {
   FileSystemArtifactStore,
   LifecycleManager,

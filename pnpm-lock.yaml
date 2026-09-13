@@ -103,6 +103,9 @@ importers:
         specifier: ^1.47.0
         version: 1.62.1
     devDependencies:
+      '@qakit/api':
+        specifier: workspace:*
+        version: link:../api
       '@types/node':
         specifier: ^26.4.0
         version: 26.4.0

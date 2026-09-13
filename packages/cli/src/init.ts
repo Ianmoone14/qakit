@@ -3,12 +3,14 @@ import path from 'node:path';
 import { CliError } from './cli-error.js';
 import { isProjectName } from './project-name.js';
 import {
+  renderApiExampleTest,
   renderExampleSrc,
   renderExampleTest,
   renderGitignore,
   renderPackageJson,
   renderQakitConfig,
   renderTsconfig,
+  renderUiExampleTest,
   renderVitestConfig,
 } from './templates.js';
 import { readPinnedQakitVersions, type PinnedQakitPackage } from './versions.js';
@@ -83,6 +85,8 @@ export function initProject(options: InitOptions): { dir: string; files: string[
     { relative: '.gitignore', contents: renderGitignore() },
     { relative: 'src/example.ts', contents: renderExampleSrc() },
     { relative: 'src/example.test.ts', contents: renderExampleTest(name) },
+    { relative: 'src/ui.example.test.ts', contents: renderUiExampleTest() },
+    { relative: 'src/api.example.test.ts', contents: renderApiExampleTest() },
   ];
 
   for (const file of files) {

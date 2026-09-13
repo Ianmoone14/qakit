@@ -2,7 +2,7 @@
 
 Copy into Jira / GitLab / Azure Boards. One epic ≈ one delivery slice. Capacity is **8 hours per week**.
 
-**Status:** 1.0–2.3 done. Next epic: **3.1 First-team pilot**.
+**Status:** 1.0–2.4 done. Next epic: **3.1 First-team pilot**.
 
 Do not start Phase 2 until Phase 1.10 is done. Do not pull Icebox items into the current board.
 
@@ -28,6 +28,7 @@ Suggested Jira fields: Epic name, Description (goal + done when), child Tasks/St
 | 2.1 CLI init and version | 2 | Done |
 | 2.2 Release and publish | 2 | Done |
 | 2.3 Upgrade command | 2 | Done |
+| 2.4 Test driver | 2 | Done |
 | 3.1 First-team pilot | 3 | Later |
 | Icebox | — | Not now |
 
@@ -290,10 +291,29 @@ Critical path: 1.2 → 1.3 → 1.4 → 1.5 → (1.6 in parallel with 1.7) → 1.
 
 ---
 
+## Epic 2.4 — Test driver
+
+**Status:** Done  
+**Depends on:** 1.9, 1.10, 2.1  
+**Goal:** Teams write short `uiTest` / `apiTest` cases without copying the 90-line lifecycle. Long examples stay as the no-driver reference.  
+**Done when:** `runQakitTest` orchestrates phases in core; Playwright/API helpers return `ExecutionSummary`; `qakit init` scaffolds the short tests.
+
+### Tasks (done)
+
+- [x] `runQakitTest` in `@qakit/core` (no Playwright / HTTP types)
+- [x] `runUiTest` + `uiTest` (`@qakit/playwright/test`)
+- [x] `runApiTest` + `apiTest` (`@qakit/api/test`)
+- [x] Combined UI + API fixtures via optional `@qakit/api` register
+- [x] Keep `run-playwright-example.ts` / `run-api-example.ts` as full wiring
+- [x] `qakit init` writes `ui.example.test.ts` and `api.example.test.ts`
+- [x] Explicit non-goal: Allure, Appium, POM, video, suite-level execution
+
+---
+
 ## Epic 3.1 — First-team pilot
 
 **Status:** Later (Phase 3)  
-**Depends on:** Phase 1 complete; Phase 2 init/version ideally available  
+**Depends on:** Phase 1 complete; Phase 2 init/version/driver available  
 **Goal:** One real team runs on QAKit. Add core code only if they hit a real hole.  
 **Done when:** That team’s CI runs their tests against published (or agreed) QAKit packages; their domain code stays in their repo.
 

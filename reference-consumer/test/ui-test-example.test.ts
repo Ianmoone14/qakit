@@ -4,12 +4,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 import { isChromiumInstalled } from '@qakit/playwright';
-import { runPlaywrightSmoke } from './run-playwright.js';
+import { runUiTestExample } from '../src/run-ui-test-example.js';
 
-const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+const consumerRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const describeBrowser = isChromiumInstalled() ? describe : describe.skip;
 
-describeBrowser('playwright', () => {
+describeBrowser('reference-consumer runUiTest', () => {
   const dirs: string[] = [];
 
   afterEach(async () => {
@@ -18,12 +18,16 @@ describeBrowser('playwright', () => {
   });
 
   it(
-    'opens about:blank through ServiceKeys.PlaywrightPage',
+    'prints a usable ExecutionSummary after the driver run',
     async () => {
-      const outputDir = await mkdtemp(path.join(tmpdir(), 'qakit-play-pw-'));
+      const outputDir = await mkdtemp(path.join(tmpdir(), 'qakit-consumer-ui-'));
       dirs.push(outputDir);
-      const summary = await runPlaywrightSmoke(root, outputDir);
+      const summary = await runUiTestExample({ cwd: consumerRoot, outputDir });
+
       expect(summary.status).toBe('passed');
+      expect(summary.results[0]?.status).toBe('passed');
+      expect(summary.results[0]?.testName).toBe('opens about:blank');
+      expect(typeof JSON.stringify(summary)).toBe('string');
     },
     90_000,
   );
