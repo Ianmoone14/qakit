@@ -13,6 +13,7 @@
   "linked": [],
   "access": "restricted",
   "baseBranch": "main",
+  "format": false,
   "updateInternalDependencies": "patch",
   "ignore": ["@qakit/reference-consumer"]
 }

@@ -57,7 +57,7 @@ describeBrowser('@qakit/playwright', () => {
     if (options?.traceOnFailure === true) {
       playwrightOptions.traceOnFailure = true;
     }
-    registerPlaywright(manager, playwrightOptions);
+    registerPlaywright(manager, { ...playwrightOptions, cwd: outputDir });
     return { execution, test, manager, store };
   }
 

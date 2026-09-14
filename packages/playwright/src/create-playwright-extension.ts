@@ -1,4 +1,4 @@
-import { rm } from 'node:fs/promises';
+import { rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import {
@@ -26,7 +26,7 @@ export interface PlaywrightExtensionOptions extends PlaywrightFileConfig {
 const HOOK_TIMEOUTS: Partial<Record<LifecyclePhase, LifecycleHookOptions>> = {
   beforeExecution: { timeout: 120_000, critical: true },
   beforeTest: { timeout: 60_000, critical: true },
-  afterTest: { timeout: 60_000 },
+  afterTest: { timeout: 60_000, critical: true },
   testCleanup: { timeout: 60_000 },
   cleanup: { timeout: 60_000 },
 };
@@ -72,7 +72,10 @@ export function createPlaywrightExtension(options: PlaywrightExtensionOptions = 
     hooks: {
       async beforeExecution(ctx) {
         try {
-          const browser = await chromium.launch({ headless });
+          const browser = await chromium.launch({
+            headless,
+            args: ['--disable-dev-shm-usage'],
+          });
           ctx.services.register(ServiceKeys.PlaywrightBrowser, browser);
         } catch (cause) {
           throw new FrameworkError('Failed to launch Chromium', {
@@ -84,7 +87,7 @@ export function createPlaywrightExtension(options: PlaywrightExtensionOptions = 
 
       async beforeTest(ctx) {
         const browser = ctx.services.get<Browser>(ServiceKeys.PlaywrightBrowser);
-        const context = await browser.newContext();
+        const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
         if (traceOnFailure) {
           await context.tracing.start({ screenshots: true, snapshots: true });
           tracing = true;
@@ -101,9 +104,16 @@ export function createPlaywrightExtension(options: PlaywrightExtensionOptions = 
 
         if (failed && screenshotOnFailure && page !== undefined) {
           const tmp = path.join(tmpdir(), `qakit-${result.testId}-screenshot.png`);
-          await page.screenshot({ path: tmp });
           try {
+            await page.bringToFront();
+            const png = await page.screenshot({ type: 'png' });
+            await writeFile(tmp, png);
             await persistArtifact(ctx, 'screenshot', 'failure.png', tmp);
+          } catch (cause) {
+            throw new FrameworkError('Failed to capture Playwright screenshot', {
+              code: 'PLAYWRIGHT_SCREENSHOT_FAILED',
+              cause,
+            });
           } finally {
             await rm(tmp, { force: true });
           }

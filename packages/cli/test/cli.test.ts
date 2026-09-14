@@ -12,6 +12,7 @@ import {
   CLI_VERSION,
   initProject,
   parseArgs,
+  readPinnedQakitVersions,
   runCli,
 } from '../src/index.js';
 
@@ -71,9 +72,10 @@ describe('qakit init', () => {
     const pkg = JSON.parse(await readFile(path.join(result.dir, 'package.json'), 'utf8')) as {
       dependencies: Record<string, string>;
     };
-    expect(pkg.dependencies['@qakit/core']).toBe('0.1.0');
-    expect(pkg.dependencies['@qakit/playwright']).toBe('0.1.0');
-    expect(pkg.dependencies['@qakit/api']).toBe('0.1.0');
+    const pinned = readPinnedQakitVersions();
+    expect(pkg.dependencies['@qakit/core']).toBe(pinned['@qakit/core']);
+    expect(pkg.dependencies['@qakit/playwright']).toBe(pinned['@qakit/playwright']);
+    expect(pkg.dependencies['@qakit/api']).toBe(pinned['@qakit/api']);
     expect(await readFile(path.join(result.dir, 'qakit.config.ts'), 'utf8')).toContain("project: 'checkout-api'");
     expect(result.files).toContain('src/example.test.ts');
     expect(result.files).toContain('src/ui.example.test.ts');
@@ -97,8 +99,9 @@ describe('qakit init', () => {
     const pkg = JSON.parse(await readFile(path.join(result.dir, 'package.json'), 'utf8')) as {
       dependencies: Record<string, string>;
     };
-    expect(pkg.dependencies['@qakit/core']).toBe('0.1.0');
-    expect(pkg.dependencies['@qakit/api']).toBe('0.1.0');
+    const pinned = readPinnedQakitVersions();
+    expect(pkg.dependencies['@qakit/core']).toBe(pinned['@qakit/core']);
+    expect(pkg.dependencies['@qakit/api']).toBe(pinned['@qakit/api']);
     expect(pkg.dependencies['@qakit/playwright']).toBeUndefined();
     expect(result.files).not.toContain('qakit.playwright.json');
     expect(result.files).not.toContain('src/ui.example.test.ts');
@@ -186,7 +189,7 @@ describe('generated project', () => {
         },
       });
       expect(code).toBe(0);
-      expect(out).toContain('@qakit/core 0.1.0');
+      expect(out).toContain(`@qakit/core ${readPinnedQakitVersions()['@qakit/core']}`);
     },
     120_000,
   );

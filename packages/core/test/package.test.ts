@@ -1,10 +1,13 @@
+import { createRequire } from 'node:module';
 import { describe, expect, it } from 'vitest';
 import { CONTRACTS_PACKAGE, CORE_PACKAGE, CORE_VERSION, defineConfig } from '../src/index.js';
+
+const pkg = createRequire(import.meta.url)('../package.json') as { version: string };
 
 describe('@qakit/core public package', () => {
   it('depends on contracts through the public package export', () => {
     expect(CORE_PACKAGE).toBe('@qakit/core');
-    expect(CORE_VERSION).toBe('0.1.0');
+    expect(CORE_VERSION).toBe(pkg.version);
     expect(CONTRACTS_PACKAGE).toBe('@qakit/contracts');
   });
 

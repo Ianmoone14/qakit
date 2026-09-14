@@ -12,6 +12,8 @@ The file says: bump these `@qakit/*` packages (major / minor / patch) and use th
 
 `fixed` in `config.json` means all publishable packages share one version. One minor ticket → everyone goes `0.1.0` → `0.2.0`.
 
+`format: false` — this repo has no Prettier. Changesets 3 would otherwise run `pnpm exec prettier` on CHANGELOGs and fail.
+
 To actually cut the version (does not publish):
 
 ```bash

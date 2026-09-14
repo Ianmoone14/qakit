@@ -2,7 +2,7 @@ import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { CLI_VERSION, HELP_TEXT, parseArgs, runCli, upgradeProject } from '../src/index.js';
+import { HELP_TEXT, parseArgs, runCli, upgradeProject, readPlatformReleaseVersion } from '../src/index.js';
 
 describe('qakit upgrade', () => {
   const dirs: string[] = [];
@@ -55,7 +55,7 @@ describe('qakit upgrade', () => {
       },
     });
     expect(code).toBe(0);
-    expect(out).toContain(`@qakit/core  0.0.9 -> ${CLI_VERSION}`);
+    expect(out).toContain(`@qakit/core  0.0.9 -> ${readPlatformReleaseVersion()}`);
     expect(out).toContain('Next: pnpm install');
     expect(out).toContain('unknown @qakit package');
     const pkg = JSON.parse(await readFile(path.join(cwd, 'package.json'), 'utf8')) as {
@@ -65,8 +65,8 @@ describe('qakit upgrade', () => {
     };
     expect(pkg.name).toBe('checkout-api');
     expect(pkg.private).toBe(true);
-    expect(pkg.dependencies['@qakit/core']).toBe(CLI_VERSION);
-    expect(pkg.dependencies['@qakit/playwright']).toBe(CLI_VERSION);
+    expect(pkg.dependencies['@qakit/core']).toBe(readPlatformReleaseVersion());
+    expect(pkg.dependencies['@qakit/playwright']).toBe(readPlatformReleaseVersion());
     expect(pkg.dependencies['@qakit/mystery']).toBe('1.2.3');
     expect(pkg.dependencies.lodash).toBe('4.17.21');
     expect(await readFile(path.join(cwd, 'src', 'login.test.ts'), 'utf8')).toBe('export const teamTest = true;\n');
@@ -91,7 +91,7 @@ describe('qakit upgrade', () => {
   });
 
   it('reports already up to date', async () => {
-    const cwd = await fixture({ '@qakit/core': CLI_VERSION });
+    const cwd = await fixture({ '@qakit/core': readPlatformReleaseVersion() });
     let out = '';
     const code = await runCli(['upgrade'], {
       cwd,
