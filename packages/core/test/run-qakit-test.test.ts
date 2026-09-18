@@ -82,6 +82,35 @@ describe('runQakitTest', () => {
     expect(summary.results[0]?.error?.code).toBe('UNEXPECTED_ERROR');
   });
 
+  it('writes start and finish lines to the logger', async () => {
+    const artifacts = await outputDir();
+    const lines: string[] = [];
+    const original = process.stdout.write.bind(process.stdout);
+    process.stdout.write = ((chunk: string | Uint8Array, ...rest: unknown[]) => {
+      lines.push(String(chunk));
+      return original(chunk as string, ...(rest as []));
+    }) as typeof process.stdout.write;
+    try {
+      await runQakitTest({
+        name: 'logs a run',
+        config: resolveConfig({
+          file: { project: 'checkout-api' },
+          env: {},
+          overrides: { artifacts: { outputDir: artifacts } },
+        }),
+        env: {},
+        cwd: artifacts,
+        run: async () => undefined,
+      });
+    } finally {
+      process.stdout.write = original;
+    }
+
+    const text = lines.join('');
+    expect(text).toContain('test started');
+    expect(text).toContain('test finished');
+  });
+
   it('re-throws the original error when throwOnFailure is true', async () => {
     const artifacts = await outputDir();
     await expect(

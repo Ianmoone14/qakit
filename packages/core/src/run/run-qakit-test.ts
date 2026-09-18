@@ -67,7 +67,14 @@ export async function runQakitTest(options: RunQakitTestOptions): Promise<Execut
       ...(options.overrides !== undefined ? { overrides: options.overrides } : {}),
     }));
 
-  const logger = createLoggerFromConfig(config);
+  const executionId = ulid();
+  const logger = createLoggerFromConfig(config, {
+    context: {
+      executionId,
+      project: config.project,
+      environment: config.environment,
+    },
+  });
   const store = new FileSystemArtifactStore({
     outputDir: config.artifacts.outputDir,
     cwd,
@@ -77,6 +84,7 @@ export async function runQakitTest(options: RunQakitTestOptions): Promise<Execut
     logger,
     artifacts: store,
     env,
+    executionId,
   });
 
   const manager = new LifecycleManager();
@@ -102,8 +110,12 @@ export async function runQakitTest(options: RunQakitTestOptions): Promise<Execut
   let result: TestResult | undefined;
   let thrown: unknown;
 
+  test.logger.info('test started', { testName: test.testName, testFile: test.testFile });
+
   try {
+    test.logger.debug('phase beforeExecution');
     await manager.runBeforeExecution(execution);
+    test.logger.debug('phase beforeTest');
     await manager.runBeforeTest(test);
     await options.run(test);
     result = createTestResult({
@@ -124,12 +136,14 @@ export async function runQakitTest(options: RunQakitTestOptions): Promise<Execut
   }
 
   try {
+    test.logger.debug('phase afterTest');
     await manager.runAfterTest(test, result);
   } catch (error) {
     thrown ??= error;
   }
 
   try {
+    test.logger.debug('phase testCleanup');
     await manager.runTestCleanup(test);
   } catch (error) {
     thrown ??= error;
@@ -138,15 +152,27 @@ export async function runQakitTest(options: RunQakitTestOptions): Promise<Execut
   const summary = createExecutionSummary({ ctx: execution, results: [result] });
 
   try {
+    test.logger.debug('phase afterExecution');
     await manager.runAfterExecution(execution, summary);
   } catch (error) {
     thrown ??= error;
   }
 
   try {
+    test.logger.debug('phase cleanup');
     await manager.runCleanup(execution);
   } catch (error) {
     thrown ??= error;
+  }
+
+  test.logger.info('test finished', {
+    status: result.status,
+    duration: result.duration,
+  });
+  if (result.error !== undefined) {
+    test.logger.error('test failed', wrapError(thrown), {
+      code: result.error.code,
+    });
   }
 
   if (options.throwOnFailure === true && thrown !== undefined) {

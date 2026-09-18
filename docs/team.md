@@ -129,6 +129,22 @@ pnpm test
 
 The terminal is the report.
 
+## Logging
+
+Logs go to the terminal, not into `ExecutionSummary`. Default: `info` + `pretty`.
+
+```ts
+export default defineConfig({
+  project: 'checkout-web',
+  environment: 'development',
+  logging: { level: 'debug', format: 'pretty' },
+});
+```
+
+`info` prints `test started` / `test finished`. `debug` also prints lifecycle phases (`beforeTest`, `cleanup`, …). Your own lines: `ctx.logger.info('opened home')`.
+
+JSON lines: `format: 'json'`.
+
 ## 6. After a failure
 
 Passes write nothing unless you enable API `saveArtifacts`.
