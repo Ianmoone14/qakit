@@ -1,94 +1,88 @@
 # QAKit
 
-Internal TypeScript QA platform. Small core, consumed by independent teams. Playwright stays native.
+Internal TypeScript QA platform. Teams **install** `@qakit/*` from the GitLab npm registry. Do not fork this repo. Do not write product tests here.
 
-## Status
+Current release: **0.2.0**. Not on public npm.
 
-Phase 1–2 are complete, including the test driver (`runQakitTest` / `uiTest` / `apiTest`). Next: first-team pilot.
+- **Teams:** [docs/team.md](docs/team.md)
+- **Publish:** [docs/deploy.md](docs/deploy.md)
 
-- `@qakit/contracts` — types, Zod schemas, error classes
-- `@qakit/core` — config, context, lifecycle, logging, artifacts, results, `runQakitTest`
-- `@qakit/playwright` — native Playwright + `runUiTest` / `uiTest` (no action wrappers)
-- `@qakit/api` — generic HTTP client + `runApiTest` / `apiTest` (no domain clients)
-- `@qakit/cli` — `qakit init [--playwright] [--api]`, `qakit version`, `qakit upgrade`
-- `reference-consumer` — example team project (public imports only)
+## Overview
 
-```bash
-pnpm install
-pnpm build
-pnpm test
-pnpm typecheck
-```
+QAKit is a small shared engine plus adapters. One test run always goes through the same core: load config → lifecycle hooks → body → results / artifacts → cleanup.
 
-Requires Node 20+ and [pnpm](https://pnpm.io) 9 (`corepack enable` or a local pnpm).
+What it has today:
+
+- `uiTest` / `apiTest` (Vitest) and `runUiTest` / `runApiTest` (same run, returns `ExecutionSummary`)
+- Native Playwright `page` — locators, `goto`, clicks stay in the team repo
+- Generic HTTP client — `api.request({ method, url, body })`; body is a string; 4xx/5xx throw
+- Combined UI + API in one `uiTest({ page, api })`
+- `qakit init [--playwright] [--api]`, `qakit version`, `qakit upgrade`
+- Team Playwright defaults in `qakit.playwright.json` (headless, screenshot/trace on failure)
+- File artifacts under `artifacts/` (no HTML report)
+- GitLab npm publish
+
+What it does not have: `qakit.click`, a shared POM, Appium, Allure/Xray, video, HTML dashboard. `retry` is stored in config and unused.
 
 ## Packages
 
-| Package | Role |
-| --- | --- |
-| `@qakit/contracts` | Shared types, config schema, errors. No I/O. |
-| `@qakit/core` | Runtime. Depends on contracts only. No Playwright. |
-| `@qakit/playwright` | Chromium + native `page`. No `qakit.click` / POM. |
-| `@qakit/api` | Generic HTTP `request`. No SAP/finance clients. |
-| `@qakit/cli` | `qakit init [--playwright] [--api]` / `version` / `upgrade`. |
+All five publishable packages version together.
 
-UI tests need a Chromium binary once per machine:
+### `@qakit/contracts`
+
+Shared types only. No Node I/O, no Playwright, no HTTP.
+
+- Config schema (`qakit.config.ts` shape, kebab-case project names)
+- `ExecutionContext` / `TestContext`, lifecycle phases, `ServiceKeys`
+- `ExecutionSummary` / `TestResult`, artifact types
+- Error classes (`QakitError`, `ConfigurationError`, `IntegrationError`, `TimeoutError`, …)
+- `Logger`, `Extension`, `AuthProvider`, `Reporter` (reporter is not invoked yet)
+
+### `@qakit/core`
+
+Runtime. Depends on contracts only. Does not import Playwright or fetch.
+
+- `defineConfig` / `loadConfig` (file → env → overrides)
+- `runQakitTest` — six phases: `beforeExecution` → `beforeTest` → run → `afterTest` → `testCleanup` → `afterExecution` / `cleanup`
+- `LifecycleManager`, logger, `FileSystemArtifactStore`
+- `createExecutionSummary` / `createTestResult`
+
+### `@qakit/playwright`
+
+Chromium + native Playwright. No action wrappers, no page-object library.
+
+- `registerPlaywright` — browser / context / page on `ServiceKeys`, closed LIFO
+- `runUiTest` / `uiTest` — fixtures `{ page, api?, ctx }`
+- `qakit.playwright.json` — team defaults; test options override the file
+- `isChromiumInstalled` — UI smoke tests skip if the browser binary is missing
+
+Browsers are not downloaded on `pnpm install`. Install Chromium separately.
+
+### `@qakit/api`
+
+Generic HTTP. No SAP/finance/domain clients.
+
+- `registerApi` — client on `ServiceKeys.ApiClient`
+- `runApiTest` / `apiTest` — fixtures `{ api, ctx }`
+- Relative URLs use `baseUrl` from config
+- Optional `AuthProvider` headers
+- Optional request/response files via `saveArtifacts`
+
+### `@qakit/cli`
+
+Binary: `qakit`.
+
+- `qakit init <name> [--playwright] [--api] [--force]` — scaffolds a consumer (core always pinned)
+- `qakit version` — CLI + installed `@qakit/*` versions
+- `qakit upgrade` — rewrites `@qakit/*` pins in `package.json` only (not tests)
+
+## This repo
+
+Node 20+, pnpm 9. `reference-consumer` is an example team import, not a product suite.
 
 ```bash
+pnpm install
 pnpm --filter @qakit/playwright exec playwright install chromium
-```
-
-Teams must import package names (`@qakit/core`), never `packages/*/src` internals.
-
-**Team start (empty folder → GitLab npm → `pnpm test`):** [docs/team-start.md](docs/team-start.md). Writing the first `uiTest` / `apiTest`: [docs/first-test.md](docs/first-test.md).
-
-Package rules: [docs/architecture.md](docs/architecture.md). Plan: [docs/plan.xlsx](docs/plan.xlsx). Epics: [docs/BACKLOG.md](docs/BACKLOG.md).
-
-## Install from the registry
-
-Packages publish to the **SixSentix GitLab npm registry**, not public npm. Copy `.npmrc.example` into the team repo as `.npmrc`, point `@qakit` at the GitLab group/project registry, and set `GITLAB_TOKEN`. Then pin versions:
-
-```json
-{
-  "dependencies": {
-    "@qakit/core": "0.1.0",
-    "@qakit/playwright": "0.1.0",
-    "@qakit/api": "0.1.0",
-    "@qakit/cli": "0.1.0"
-  }
-}
-```
-
-Package names stay `@qakit/*` (the GitLab group is sixsentix; that does not need to match the npm scope).
-
-Published pins are still **0.1.0**. The driver and init flags are in git; they become 0.2.0 only after Changesets (see below).
-
-Platform versions move together. Semver: public API break = major; new optional API = minor; fix = patch.
-
-A **changeset** (`.changeset/*.md`) is a ticket for the next publish: which packages to bump and the changelog sentence. It is not the new version by itself.
-
-```bash
-pnpm changeset           # add a ticket after a user-facing change
-pnpm version-packages    # bump package.json + CHANGELOG, delete used tickets
-```
-
-Then run the GitLab **publish** job on the default branch. Details: [docs/architecture.md](docs/architecture.md#release-changesets).
-
-## Layout
-
-```
-packages/contracts/   # public contract
-packages/core/        # runtime
-packages/playwright/  # native Playwright extension
-packages/api/         # generic HTTP client
-packages/cli/         # qakit init / version / upgrade
-reference-consumer/   # example consumer
-.changeset/           # versioning
-.gitlab-ci.yml        # test + publish
-.github/workflows/    # CI while the repo is still on GitHub
-docs/team-start.md    # team: empty folder → green run
-docs/first-test.md    # team: write uiTest / apiTest
-docs/architecture.md  # package boundaries
-docs/plan.xlsx        # plan + hours log (Excel)
-docs/BACKLOG.md       # epics and tasks
+pnpm test
+pnpm typecheck
 ```

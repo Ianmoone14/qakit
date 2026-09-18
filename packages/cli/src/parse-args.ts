@@ -14,6 +14,14 @@ export interface ParsedArgs {
   linkPackagesDir?: string;
 }
 
+function requireOptionValue(args: string[], flag: string): string {
+  const value = args.shift();
+  if (value === undefined) {
+    throw new CliError(`Missing value for ${flag}`, 'INIT_ARGS_INVALID');
+  }
+  return value;
+}
+
 export function parseArgs(argv: readonly string[], cwd = process.cwd()): ParsedArgs {
   const args = [...argv];
   let force = false;
@@ -30,52 +38,40 @@ export function parseArgs(argv: readonly string[], cwd = process.cwd()): ParsedA
     if (next === undefined) {
       break;
     }
-    if (next === '--help' || next === '-h') {
-      return { command: 'help', cwd: cwdOpt ?? cwd, force, major, dryRun, playwright: true, api: true };
+    switch (next) {
+      case '--help':
+      case '-h':
+        return { command: 'help', cwd: cwdOpt ?? cwd, force, major, dryRun, playwright: true, api: true };
+      case '--version':
+      case '-v':
+        return { command: 'version', cwd: cwdOpt ?? cwd, force, major, dryRun, playwright: true, api: true };
+      case '--force':
+        force = true;
+        break;
+      case '--major':
+        major = true;
+        break;
+      case '--dry-run':
+        dryRun = true;
+        break;
+      case '--playwright':
+        playwrightFlag = true;
+        break;
+      case '--api':
+        apiFlag = true;
+        break;
+      case '--cwd':
+        cwdOpt = requireOptionValue(args, '--cwd');
+        break;
+      case '--link-packages':
+        linkPackagesDir = requireOptionValue(args, '--link-packages');
+        break;
+      default:
+        if (next.startsWith('-')) {
+          throw new CliError(`Unknown option: ${next}`, 'INIT_ARGS_INVALID');
+        }
+        positional.push(next);
     }
-    if (next === '--version' || next === '-v') {
-      return { command: 'version', cwd: cwdOpt ?? cwd, force, major, dryRun, playwright: true, api: true };
-    }
-    if (next === '--force') {
-      force = true;
-      continue;
-    }
-    if (next === '--major') {
-      major = true;
-      continue;
-    }
-    if (next === '--dry-run') {
-      dryRun = true;
-      continue;
-    }
-    if (next === '--playwright') {
-      playwrightFlag = true;
-      continue;
-    }
-    if (next === '--api') {
-      apiFlag = true;
-      continue;
-    }
-    if (next === '--cwd') {
-      const value = args.shift();
-      if (value === undefined) {
-        throw new CliError('Missing value for --cwd', 'INIT_ARGS_INVALID');
-      }
-      cwdOpt = value;
-      continue;
-    }
-    if (next === '--link-packages') {
-      const value = args.shift();
-      if (value === undefined) {
-        throw new CliError('Missing value for --link-packages', 'INIT_ARGS_INVALID');
-      }
-      linkPackagesDir = value;
-      continue;
-    }
-    if (next.startsWith('-')) {
-      throw new CliError(`Unknown option: ${next}`, 'INIT_ARGS_INVALID');
-    }
-    positional.push(next);
   }
 
   const commandToken = positional[0];
@@ -94,25 +90,26 @@ export function parseArgs(argv: readonly string[], cwd = process.cwd()): ParsedA
   if (commandToken === undefined || commandToken === 'help') {
     return base;
   }
-  if (commandToken === 'version') {
-    return { ...base, command: 'version' };
-  }
-  if (commandToken === 'upgrade') {
-    return { ...base, command: 'upgrade' };
-  }
-  if (commandToken === 'init') {
-    const parsed: ParsedArgs = { ...base, command: 'init' };
-    const name = positional[1];
-    if (name !== undefined) {
-      parsed.name = name;
-    }
-    if (linkPackagesDir !== undefined) {
-      parsed.linkPackagesDir = linkPackagesDir;
-    }
-    return parsed;
-  }
 
-  throw new CliError(`Unknown command: ${commandToken}`, 'UNKNOWN_COMMAND');
+  switch (commandToken) {
+    case 'version':
+      return { ...base, command: 'version' };
+    case 'upgrade':
+      return { ...base, command: 'upgrade' };
+    case 'init': {
+      const parsed: ParsedArgs = { ...base, command: 'init' };
+      const name = positional[1];
+      if (name !== undefined) {
+        parsed.name = name;
+      }
+      if (linkPackagesDir !== undefined) {
+        parsed.linkPackagesDir = linkPackagesDir;
+      }
+      return parsed;
+    }
+    default:
+      throw new CliError(`Unknown command: ${commandToken}`, 'UNKNOWN_COMMAND');
+  }
 }
 
 export const HELP_TEXT = `Usage:
